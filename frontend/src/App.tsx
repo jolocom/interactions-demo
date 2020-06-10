@@ -30,8 +30,6 @@ class App extends React.Component {
         <main className="main">
           <article className="c-qrcode-container">
             <InteractionContainer />
-            <InteractionContainer />
-            <InteractionContainer />
           </article>
         </main>
       </React.Fragment>

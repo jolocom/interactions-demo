@@ -29,6 +29,7 @@ const sockMap: {[id: string]: any} = {}
 
 let rpcWS: WebSocket
 
+// TODO most of this code needs to move into an npm package @jolocom/sdk-web-connector
 export const getQrCode = async (
   socketName: string,
 ): Promise<QrCodeClientResponse> => {

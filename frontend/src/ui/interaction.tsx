@@ -63,7 +63,7 @@ export const InteractionContainer = () => {
         {encryptReady ? (
           <>
             <div style={{ paddingTop: '20px', width: '100%' }}>
-              <h4>Data to encrypt</h4>
+              <h4>Input Data</h4>
               <input
                 style={{
                   margin: '10px',
@@ -93,26 +93,28 @@ export const InteractionContainer = () => {
           <b>Error</b>
         ) : (
           jwt && (<div>
-            <img src={qr} className="c-qrcode" alt="QR Code" />
             <div style={{wordWrap: 'break-word', maxWidth: '50vw'}}>
-              {'yarn run ts-node rpc_agent2/index.ts ' + jwt}
+              {'docker-compose run rpc_agent start ' + jwt}
             </div>
           </div>)
         )}
         {!!encryptOutput.length && (
-          <div
-            style={{
-              border: '1px solid black',
-              padding: '20px',
-              backgroundColor: 'white',
-              width: '500px',
-              textAlign: 'center',
-              overflowWrap: 'break-word',
-              borderRadius: '10px',
-            }}
-          >
-            <i>{encryptOutput}</i>
-          </div>
+          <>
+            <h4>Output Data</h4>
+            <div
+              style={{
+                border: '1px solid black',
+                padding: '20px',
+                backgroundColor: 'white',
+                width: '500px',
+                textAlign: 'center',
+                overflowWrap: 'break-word',
+                borderRadius: '10px',
+              }}
+            >
+              <i>{encryptOutput}</i>
+            </div>
+          </>
         )}
       </div>
     </div>
