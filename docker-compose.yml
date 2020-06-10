@@ -1,0 +1,27 @@
+version: '2.1'
+
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+
+  rpc_proxy:
+    build: ./docker-node-jolocom-sdk
+    image: jolocom/sdk:rpc
+    restart: unless-stopped
+    volumes:
+      - ./rpc_proxy:/app
+    ports:
+      - "9000:9000"
+    environment:
+      PUBLIC_HOSTPORT: 'rpc_proxy:9000'
+      DEBUG: 1
+
+  rpc_agent:
+    build: ./docker-node-jolocom-sdk
+    image: jolocom/sdk:rpc
+    volumes:
+      - ./rpc_agent:/app
