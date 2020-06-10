@@ -14,10 +14,10 @@
   dependencies:
     class-transformer "^0.2.3"
 
-"@jolocom/sdk@^0.9.12":
-  version "0.9.12"
-  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-0.9.12.tgz#187c3a5e7373068d309f265820a15903bf7a2990"
-  integrity sha512-fHZJrjnqI0SIZ9wKNuM64xHW/e1WIm5TzDKbTwvcrKq7qZOttTAZc+xm4XF9Fta6NGoyQUeRb+a8ezk8a+A+nA==
+"@jolocom/sdk@^0.9.14":
+  version "0.9.14"
+  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-0.9.14.tgz#e70ec74a51d1bc6ddc73d49bc2f6eaa8bf92ac96"
+  integrity sha512-VhVBTIDGc/dJnIRhiOhOLdsfTXt0zEK0QprGSMjxebBVVEnfXDGdbTk12FAdxJY4kFwVp9aC5k7f4b56WnRtIw==
   dependencies:
     assert "^2.0.0"
     bip39 "^3.0.2"
@@ -28,7 +28,7 @@
     events "^3.0.0"
     form-data "^3.0.0"
     i18n-js "^3.1.0"
-    jolocom-lib "^4.3.2"
+    jolocom-lib "^4.3.3"
     ramda "^0.26.1"
     sjcl "^1.0.7"
     sqlite3 "^4.0.0"
@@ -2180,34 +2180,6 @@ isurl@^1.0.0-alpha5:
   dependencies:
     has-to-string-tag-x "^1.2.0"
     is-object "^1.0.1"
-
-jolocom-lib@^4.3.2:
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/jolocom-lib/-/jolocom-lib-4.3.2.tgz#bfbc8a39eb757f7521750d1c7fe08c5068bb0d8d"
-  integrity sha512-heHuifeVPumhm2HZQxc4S64ptTNV71yci0s8QVpRabkX33h5h9/h7yfDjEJJcjv7KKs5YG7k0eUrOchORzkRrg==
-  dependencies:
-    base64url "^3.0.1"
-    bip32 "^1.0.2"
-    bip39 "^3.0.1"
-    class-transformer "^0.1.10"
-    create-hash "^1.2.0"
-    cred-types-jolocom-core "^0.0.11"
-    detect-node "^2.0.4"
-    eccrypto rootstock/eccrypto#485e11f163093fb6e0d5263fa46ed5075dedfe88
-    ethereumjs-tx "^1.3.7"
-    ethereumjs-util "^6.1.0"
-    ethers "^4.0.27"
-    form-data "^2.3.3"
-    jolocom-registry-contract "^0.1.7"
-    json-logic-js "^1.2.2"
-    jsonld "^1.5.3"
-    jsontokens "^1.0.0"
-    node-fetch "^2.3.0"
-    qrcode "^1.3.3"
-    reflect-metadata "^0.1.13"
-    secrets.js-grempe "^1.1.0"
-    sinon-chai "^3.3.0"
-    tiny-secp256k1 "^1.0.1"
 
 jolocom-lib@^4.3.3:
   version "4.3.3"
