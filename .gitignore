@@ -1,3 +1,5 @@
 node_modules
 db.sqlite3
 password.txt
+.*swp
+.*swo
