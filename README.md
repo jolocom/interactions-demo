@@ -10,6 +10,7 @@ docker-compose up
 Wait for the servers to spin up (see terminal output)
 
 Then visit the frontend development server at http://localhost:3000 
+and open the Web Console to see debugging output
 
 Click 'Start RPC Demo' to create a new RPC session. The frontend will provide a
 `docker-compose` command to run the `rpc_agent`. It will look something like
