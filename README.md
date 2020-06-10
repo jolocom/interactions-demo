@@ -21,10 +21,10 @@ docker-compose run rpc_agent start eyiusdbfisudfbksdjbs...sdfjkhsdjkfshk
 
 ### Related Code Bases
 
-sdk: https://github.com/jolocom/sdk/tree/feat/enc_dec_rpc
+Jolocom SDK: https://github.com/jolocom/jolocom-sdk/tree/feat/enc_dec_rpc
 
 rpc_proxy: https://github.com/jolocom/hapi-jolocom-backend/tree/rpc
 
-rpc_agent: https://github.com/mnzaki/jolocom-agentry rpc_agent2
+rpc_agent: https://github.com/mnzaki/jolocom-agentry/tree/rpc rpc_agent2
 
 frontend: https://github.com/mnzaki/generic-frontend/tree/rpc-demo
