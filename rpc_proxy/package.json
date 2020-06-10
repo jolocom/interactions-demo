@@ -20,7 +20,7 @@
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^1.1.0",
     "hapi-plugin-websocket": "^2.3.0",
-    "jolocom-lib": "^4.3.2",
+    "jolocom-lib": "^4.3.3",
     "typeorm": "^0.2.24"
   }
 }
