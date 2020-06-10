@@ -1,9 +1,7 @@
 import React from 'react'
 import './reset.css'
 import './App.css'
-import { getQrCode, awaitStatus } from './utils/sockets'
 import { InteractionContainer } from './ui/interaction'
-import { InteractionType } from './config'
 const jolocomLogo = require('./images/JO_icon.svg')
 
 interface State {
@@ -13,18 +11,12 @@ interface State {
   }
 }
 
-const initialState: State = {
-  loading: false,
-  qrCode: {
-    source: '',
-  },
-}
-
 class App extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <header className="c-header">
+        <header className="c-header" style={{textAlign: 'center'}}>
+          <h1><img src={jolocomLogo} alt="Jolocom Logo" />&nbsp;Jolocom</h1>
           <h1>RPC Demo</h1>
         </header>
         <main className="main">

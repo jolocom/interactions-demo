@@ -1,4 +1,3 @@
-import io from 'socket.io-client'
 import { serviceUrl, serviceHostport } from '../config'
 
 const serviceWsUrl = `ws://${serviceHostport}`
@@ -37,11 +36,6 @@ export const getQrCode = async (
   const chanJSON = await chanResp.json()
   console.log('this is', `${serviceWsUrl}/${socketName}`, chanJSON)
   console.log('connecting to RPC Proxy at', `${chanJSON.paths.rpcWS}`, chanJSON)
-
-  let resolveReady: { (): void; (value?: unknown): void } | null
-  const readyPromise = new Promise(resolve => {
-    resolveReady = resolve
-  })
 
   rpcWS = new WebSocket(`${serviceWsUrl}${chanJSON.paths.rpcWS}`)
   rpcWS.onmessage = (evt) => {

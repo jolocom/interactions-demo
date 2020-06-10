@@ -4,7 +4,6 @@ import { InteractionButton } from './interactionButton'
 
 export const InteractionContainer = () => {
   const [identifier, setIdentifier] = useState<string>('')
-  const [wsAddr, setWsAddress] = useState<string>('')
   const [qr, setQr] = useState<string>('')
   const [jwt, setJwt] = useState<string>('')
   const [err, setErr] = useState<boolean>(false)
@@ -16,7 +15,7 @@ export const InteractionContainer = () => {
   const [encryptReady, setEncryptReady] = useState(false)
 
   const onClickStart = async () => {
-    const { authTokenQR, authTokenJWT, socket, identifier } = await getQrCode('rpcProxy')
+    const { authTokenQR, authTokenJWT, identifier } = await getQrCode('rpcProxy')
     setQr(authTokenQR)
     setJwt(authTokenJWT)
     setIdentifier(identifier)
@@ -49,7 +48,7 @@ export const InteractionContainer = () => {
         borderRadius: '40px',
       }}
     >
-      <h2>RPC Encrypt</h2>
+      <h2>RPC Encrypt/Decrypt Demo</h2>
       <div
         style={{
           width: '100%',

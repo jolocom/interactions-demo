@@ -1,5 +1,4 @@
 import React from 'react'
-import { InteractionType } from '../config'
 const jolocomLogo = require('../images/JO_icon.svg')
 
 interface Props {
