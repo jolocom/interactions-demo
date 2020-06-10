@@ -316,7 +316,7 @@ export const rpcProxyPlugin: Plugin<PluginOptions> = {
               })
             } else if (msg.rpc == 'asymDecrypt') {
               ssiRPC = await sdk.rpcDecRequest({
-                toDecrypt: Buffer.from(msg.request),
+                toDecrypt: Buffer.from(msg.request, 'base64'),
                 callbackURL: ''
               })
             } else {
