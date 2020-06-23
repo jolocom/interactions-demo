@@ -224,7 +224,28 @@ export const rpcProxyPlugin: Plugin<PluginOptions> = {
      * The ws:// URL generated is by appending the token nonce
      */
     server.route({
-      method: "POST", path: `/{nonce?}`,
+      method: "GET", path: `/{nonce?}`,
+      config: {
+                                 // BIG WARNING
+        cors: { origin: ['*'] }, // FIXME lift up to config.ts or something and add
+                                 // BIG WARNING
+      },
+      handler: async (
+        request: Request,
+        h: ResponseToolkit
+      ) => { /**/
+        const params = request.params || {}
+        try {
+          const ch = peerMap.getChannel(params.nonce)
+          return peerMap.getChannelJSON(ch)
+        } catch (err) {
+          return Boom.badRequest(err.toString())
+        }
+      }
+    })
+
+    server.route({
+      method: 'POST', path: `/{nonce?}`,
       config: {
                                  // BIG WARNING
         cors: { origin: ['*'] }, // FIXME lift up to config.ts or something and add
@@ -256,7 +277,7 @@ export const rpcProxyPlugin: Plugin<PluginOptions> = {
         debug('handle front for chan', params.nonce, 'mode', mode, 'ctx', ctx)
 
         if (mode === 'websocket') {
-          debug('websocket request, initially', initially, 'chan', ctx.ch)
+          debug('frontend websocket request, initially', initially, 'chan', ctx.ch)
 
           if (!params.nonce) {
             return Boom.badRequest('missing session nonce')
@@ -264,12 +285,8 @@ export const rpcProxyPlugin: Plugin<PluginOptions> = {
 
           try {
             ch = peerMap.getChannel(params.nonce)
-            if (!ch.rpcWS) {
-              // if this is an initial request, we find the channel and update it with our current open
-              // websocket which is the 'authenticated' frontend socket
-              // 'authenticated' because of usage of the nonce of course
-              ch.rpcWS = ws
-            }
+            ch.rpcWS = ws
+            if (ctx) ctx.ch = ch
           } catch (err) {
             return Boom.badRequest(err.toString())
           }
@@ -297,7 +314,15 @@ export const rpcProxyPlugin: Plugin<PluginOptions> = {
         }
 
         if (msg.rpc == 'start') {
-          ch.messages[0] = msg
+          const prevStartMsg = ch.messages[0]
+          if (!prevStartMsg) {
+            // this is a new channel, we save this message
+            ch.messages[0] = msg
+          } else {
+            // this channel was already established, we will replay the SSI
+            // agent's response to the start message
+            return JSON.stringify(prevStartMsg)
+          }
         } else {
           if (!ch.ssiWS) {
             return Boom.badRequest('no SSI agent connected yet')
