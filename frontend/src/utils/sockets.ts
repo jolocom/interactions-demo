@@ -31,9 +31,28 @@ let rpcWS: WebSocket
 // TODO most of this code needs to move into an npm package @jolocom/sdk-web-connector
 export const getQrCode = async (
   socketName: string,
+  identifier?: string | null
 ): Promise<QrCodeClientResponse> => {
-  const chanResp = await fetch(`${serviceUrl}/${socketName}`, { method: 'POST' })
-  const chanJSON = await chanResp.json()
+  let chanResp, chanJSON: any
+  if (identifier) {
+    try {
+      chanResp = await fetch(`${serviceUrl}/${socketName}/${identifier}`)
+      chanJSON = await chanResp.json()
+      if (chanResp.status !== 200) {
+        chanResp = null
+        throw new Error(chanJSON.message)
+      }
+    } catch (err) {
+      console.error('failed to load channel ' + identifier, err)
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+  }
+
+  if (!chanResp) {
+    chanResp = await fetch(`${serviceUrl}/${socketName}`, { method: 'POST' })
+    chanJSON = await chanResp.json()
+  }
+
   console.log('this is', `${serviceWsUrl}/${socketName}`, chanJSON)
   console.log('connecting to RPC Proxy at', `${chanJSON.paths.rpcWS}`, chanJSON)
 
@@ -50,22 +69,20 @@ export const getQrCode = async (
   const session = sockMap[chanJSON.nonce] = {
     socket: rpcWS,
     msgN: 0,
-    messages: {}
+    messages: {},
+    promise: new Promise<QrCodeClientResponse>(resolve => {
+      rpcWS.onopen = (evt) => {
+        resolve({
+          authTokenQR: '',
+          authTokenJWT: chanJSON.jwt,
+          identifier: chanJSON.nonce,
+          socket: rpcWS
+        })
+      }
+    })
   }
 
-  return new Promise<QrCodeClientResponse>(resolve => {
-    rpcWS.onopen = (evt) => {
-      //@ts-ignore
-      session.promise = sendRPC(chanJSON.nonce, 'start') // TODO indicate success
-
-      resolve({
-        authTokenQR: '',
-        authTokenJWT: chanJSON.jwt,
-        identifier: chanJSON.nonce,
-        socket: rpcWS
-      })
-    }
-  });
+  return session.promise
 }
 
 export const sendRPC = (identifier: string, rpc: string, request: any = ''): Promise<string> => {
@@ -79,6 +96,7 @@ export const sendRPC = (identifier: string, rpc: string, request: any = ''): Pro
       rpc,
       request
     }
+    console.log('sending RPC call', msg)
     ws.send(JSON.stringify({
       id: msg.id,
       rpc,
@@ -95,6 +113,7 @@ export const getDecryptedData = (identifier: string, data: string): Promise<stri
 }
 
 export const awaitStatus = (identifier: string) => {
-  return sockMap[identifier].promise
-    
+  return sockMap[identifier].promise.then(() => {
+    return sendRPC(identifier, 'start') // TODO indicate success
+  })
 }

@@ -15,17 +15,19 @@ export const InteractionContainer = () => {
   const [encryptReady, setEncryptReady] = useState(false)
 
   const onClickStart = async () => {
-    const { authTokenQR, authTokenJWT, identifier } = await getQrCode('rpcProxy')
+    const params = new URLSearchParams(window.location.search);
+    const { authTokenQR, authTokenJWT, identifier } = await getQrCode('rpcProxy', params.get('id'))
     setQr(authTokenQR)
     setJwt(authTokenJWT)
     setIdentifier(identifier)
-    awaitStatus(identifier)
-      .then(() => {
-        setQr('')
-        setJwt('')
-        setEncryptReady(true)
-      })
-      .catch((e: any) => setErr(e))
+    awaitStatus(identifier).then(() => {
+      setQr('')
+      setJwt('')
+      setEncryptReady(true)
+      params.set('id', identifier);
+      window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
+    })
+    .catch((e: any) => setErr(e))
   }
 
   const onClickEncrypt = async () => {
