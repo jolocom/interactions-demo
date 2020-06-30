@@ -8,20 +8,21 @@ services:
     volumes:
       - ./frontend:/app
 
-  rpc_proxy:
-    build: ./docker-node-jolocom-sdk
-    image: jolocom/sdk:rpc
+  service_agent:
+    build: ./sdk
+    image: jolocom/sdk
     restart: unless-stopped
     volumes:
-      - ./rpc_proxy:/app
+      - ./service_agent:/app
     ports:
       - "9000:9000"
     environment:
-      PUBLIC_HOSTPORT: 'rpc_proxy:9000'
+      JWT_COMMAND: 'docker-compose run rpc_agent start'
+      PUBLIC_HOSTPORT: 'service_agent:9000'
       DEBUG: 1
 
   rpc_agent:
-    build: ./docker-node-jolocom-sdk
-    image: jolocom/sdk:rpc
+    build: ./sdk
+    image: jolocom/sdk
     volumes:
       - ./rpc_agent:/app

@@ -3,4 +3,5 @@ import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const jwtCommand = process.env.JWT_COMMAND || 'cd rpc_agent;\nyarn start'
+ReactDOM.render(<App jwtCommand={jwtCommand}/>, document.getElementById('root'))

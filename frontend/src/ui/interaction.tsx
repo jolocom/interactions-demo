@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { getQrCode, awaitStatus, getEncryptedData, getDecryptedData } from '../utils/sockets'
 import { InteractionButton } from './interactionButton'
 
-export const InteractionContainer = () => {
+export const InteractionContainer = ({ jwtCommand }: { jwtCommand: string }) => {
   const [identifier, setIdentifier] = useState<string>('')
   const [qr, setQr] = useState<string>('')
   const [jwt, setJwt] = useState<string>('')
@@ -94,8 +94,11 @@ export const InteractionContainer = () => {
           <b>Error</b>
         ) : (
           jwt && (<div>
-            <div style={{wordWrap: 'break-word', maxWidth: '50vw'}}>
-              {'docker-compose run rpc_agent start ' + jwt}
+            <div style={{
+              wordWrap: 'break-word', maxWidth: '50vw',
+              whiteSpace: 'pre-wrap', fontFamily: 'monospace'
+              }}>
+              {jwtCommand} {jwt}
             </div>
           </div>)
         )}

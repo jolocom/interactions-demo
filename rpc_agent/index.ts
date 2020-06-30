@@ -1,7 +1,6 @@
-const { JSONWebToken } = require('jolocom-lib/js/interactionTokens/JSONWebToken')
 const typeorm = require('typeorm')
 const { JolocomTypeormStorage } = require('@jolocom/sdk-storage-typeorm')
-const { JolocomSDK } = require('@jolocom/sdk')
+const { JolocomSDK, JSONWebToken } = require('@jolocom/sdk')
 const { isEncryptionRequest, isDecryptionRequest } = require('@jolocom/sdk/js/src/lib/interactionManager/guards')
 import { FilePasswordStore } from '@jolocom/sdk-password-store-filesystem'
 import * as WebSocket from 'ws'

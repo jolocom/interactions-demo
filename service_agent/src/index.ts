@@ -1,10 +1,12 @@
 import * as hapi from '@hapi/hapi'
 import * as HAPIWebSocket from 'hapi-plugin-websocket'
+import { JolocomRPCProxyPlugin } from 'hapi-jolocom/dist/rpc'
+import { JolocomAuthPlugin } from 'hapi-jolocom/dist/auth'
+
 import { JolocomSDK } from "@jolocom/sdk"
 import { FilePasswordStore } from "@jolocom/sdk-password-store-filesystem"
 import { JolocomTypeormStorage } from "@jolocom/sdk-storage-typeorm"
-import { rpcProxyPlugin } from './rpc'
-import { createServer } from 'http'
+
 const typeorm = require("typeorm")
 
 const typeormConfig = {
@@ -33,8 +35,6 @@ export const init = async () => {
   const port = process.env.PUBLIC_PORT || 9000;
   await sdk.init()
 
-  // const nodeListener = createServer()
-
   const server = new hapi.Server({
     port,
     debug: {
@@ -47,15 +47,39 @@ export const init = async () => {
 
   await server.register(HAPIWebSocket)
 
-  await server.register({
-    plugin: rpcProxyPlugin,
-    options: {
-      sdk
+  const rpcMap = {
+    asymEncrypt: async (request, { ch }) => {
+      const ssiMsg = await sdk.rpcEncRequest({
+        toEncrypt: Buffer.from(request),
+        target: `${ch.did}#keys-1`,
+        callbackURL: ''
+      })
+      const resp = await ch.sendSSIMessage(ssiMsg)
+      return resp.payload.interactionToken.result
     },
+    asymDecrypt: async (request, { ch }) => {
+      const ssiMsg = await sdk.rpcDecRequest({
+        toDecrypt: Buffer.from(request, 'base64'),
+        callbackURL: ''
+      })
+      const resp = await ch.sendSSIMessage(ssiMsg)
+      return resp.payload.interactionToken.result
+    },
+  }
+
+  await server.register({
+    plugin: new JolocomRPCProxyPlugin(sdk, rpcMap),
     routes: {
       prefix: '/rpcProxy',
     }
   });
+
+  await server.register({
+    plugin: new JolocomAuthPlugin(sdk),
+    routes: {
+      prefix: '/auth'
+    }
+  })
 
   await server.start();
   console.log("running")

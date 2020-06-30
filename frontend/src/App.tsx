@@ -11,17 +11,17 @@ interface State {
   }
 }
 
-class App extends React.Component {
+class App extends React.Component<{ jwtCommand: string}> {
   render() {
     return (
       <React.Fragment>
         <header className="c-header" style={{textAlign: 'center'}}>
           <h1><img src={jolocomLogo} alt="Jolocom Logo" />&nbsp;Jolocom</h1>
-          <h1>RPC Demo</h1>
+          <h1>Interactions Demo</h1>
         </header>
         <main className="main">
           <article className="c-qrcode-container">
-            <InteractionContainer />
+            <InteractionContainer jwtCommand={this.props.jwtCommand} />
           </article>
         </main>
       </React.Fragment>

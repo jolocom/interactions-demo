@@ -7,20 +7,23 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "ts-node ./src/index"
+    "debug": "DEBUG=1 nodemon",
+    "start": "nodemon"
   },
   "devDependencies": {
     "@types/ws": "^7.2.4",
+    "nodemon": "^2.0.4",
     "tslib": "^2.0.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {
     "@hapi/hapi": "18",
-    "@jolocom/sdk": "^0.9.14",
+    "@jolocom/sdk": "^0.11.0",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^1.1.0",
     "hapi-plugin-websocket": "^2.3.0",
     "jolocom-lib": "^4.3.3",
+    "sqlite3": "^4.2.0",
     "typeorm": "^0.2.24"
   }
 }
