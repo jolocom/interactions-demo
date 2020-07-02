@@ -102,6 +102,9 @@ export const InteractionContainer = ({ jwtCommand }: { jwtCommand: string }) => 
             </div>
           </div>)
         )}
+
+        {!err && qr && (<img src={qr} />)}
+
         {!!encryptOutput.length && (
           <>
             <h4>Output Data</h4>

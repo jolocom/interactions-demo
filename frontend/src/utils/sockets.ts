@@ -73,7 +73,7 @@ export const getQrCode = async (
     promise: new Promise<QrCodeClientResponse>(resolve => {
       rpcWS.onopen = (evt) => {
         resolve({
-          authTokenQR: '',
+          authTokenQR: chanJSON.qr,
           authTokenJWT: chanJSON.jwt,
           identifier: chanJSON.nonce,
           socket: rpcWS
