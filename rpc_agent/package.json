@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "debug": "DEBUG=1 ts-node --inspect index.ts"
   },
   "license": "MIT",
   "dependencies": {
