@@ -2272,10 +2272,10 @@ graceful-fs@^4.1.10, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
   integrity sha1-TK+tdrxi8C+gObL5Tpo906ORpyU=
 
-hapi-jolocom@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-0.3.0.tgz#ae433e0cca05dd401512b86a61ed5e33ccc13399"
-  integrity sha512-7A19R9Ml8ub4jcgTT4wbF/BjHcnEeytuAoYzSWWpsL444k8Sszv6prW72ebdEOQQwpg8dlpUufjx+LW3HOKSZw==
+hapi-jolocom@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-0.4.2.tgz#61171c45274dcb4dfc2acf82b88d16a132a6af8c"
+  integrity sha512-gy+2JEfuXq1sgtREv19cmMtP9MU0qVu0t3mOW/PAgBVMRBNjJQisKqdJZ8Jm0HQO8XjMQQOK43YUCMfI9QFVdw==
   dependencies:
     qrcode "^1.4.4"
     ws "^7.3.0"

@@ -68,7 +68,11 @@ export const init = async () => {
   }
 
   await server.register({
-    plugin: new JolocomRPCProxyPlugin(sdk, rpcMap),
+    plugin: new JolocomRPCProxyPlugin(sdk, {
+      rpcMap,
+      tls: !!process.env.SERVICE_TLS || false,
+      publicHostport: process.env.SERVICE_HOSTPORT || 'localhost:9000'
+    }),
     routes: {
       prefix: '/rpcProxy',
     }

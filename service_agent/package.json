@@ -21,7 +21,7 @@
     "@jolocom/sdk": "^0.13.0",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^1.1.0",
-    "hapi-jolocom": "^0.3.0",
+    "hapi-jolocom": "^0.4.2",
     "hapi-plugin-websocket": "^2.3.0",
     "jolocom-lib": "^4.3.3",
     "sqlite3": "^4.2.0",
