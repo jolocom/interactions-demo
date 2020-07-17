@@ -19,12 +19,17 @@ Click 'Start RPC Demo' to create a new RPC session. The frontend will provide a
 docker-compose run rpc_agent start eyiusdbfisudfbksdjbs...sdfjkhsdjkfshk
 ```
 
-### Related Code Bases
+### Usage with the SmartWallet
 
-Jolocom SDK: https://github.com/jolocom/jolocom-sdk/tree/feat/enc_dec_rpc
+The `service_agent` needs to know its "public" facing "host:port" address to be
+able to embed it in the interaction tokens, such the the SmartWallet can find
+the agent.
 
-rpc_proxy: https://github.com/jolocom/hapi-jolocom-backend/tree/rpc
+To successfully go through the demo, change the `PUBLIC_HOSTPORT` environment
+variable inside `docker-compose.yml` to a value that the mobile phone can
+access, probably the LAN IP address of the computer running the `service_agent`,
+assuming the test SmartWallet is on the same LAN
 
-rpc_agent: https://github.com/mnzaki/jolocom-agentry/tree/rpc rpc_agent2
-
-frontend: https://github.com/mnzaki/generic-frontend/tree/rpc-demo
+Also note that the SmartWallet release build require HTTP**S** connections, and cannot use
+plain HTTP. To use this demo without SSL certificates please use a **staging**
+build of the SmartWallet on Android.
