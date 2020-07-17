@@ -308,10 +308,10 @@
   dependencies:
     class-transformer "^0.2.3"
 
-"@jolocom/sdk@^0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-0.11.0.tgz#f4aab89e5eb0617bb860dd44dab2ae5b6c314b81"
-  integrity sha512-aD5S+omlQIci0c12fNx6T1iYBXkbg/d4UI0hIuAt3O7Q9RzWfsPNKsChclkZ/7mHf192kDGToC8pi/DVkfxWlg==
+"@jolocom/sdk@^0.13.0":
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-0.13.0.tgz#05d4217fbb6f2be595129364d77cbd7441bb6417"
+  integrity sha512-eQUhHomjMRQngk0RBE8Y8OyryZm+2UfBEP7hyWWAI2LmGqyhAk7DpsuU+dp3S7FTLmUbe3bFd1Qpt622jaHvow==
   dependencies:
     form-data "^3.0.0"
     ramda "^0.26.1"
@@ -2272,6 +2272,14 @@ graceful-fs@^4.1.10, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
   integrity sha1-TK+tdrxi8C+gObL5Tpo906ORpyU=
 
+hapi-jolocom@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-0.3.0.tgz#ae433e0cca05dd401512b86a61ed5e33ccc13399"
+  integrity sha512-7A19R9Ml8ub4jcgTT4wbF/BjHcnEeytuAoYzSWWpsL444k8Sszv6prW72ebdEOQQwpg8dlpUufjx+LW3HOKSZw==
+  dependencies:
+    qrcode "^1.4.4"
+    ws "^7.3.0"
+
 hapi-plugin-websocket@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/hapi-plugin-websocket/-/hapi-plugin-websocket-2.3.0.tgz#8555cd7df31d856d5aab18ad94ec79ecf132fccd"
@@ -3744,7 +3752,7 @@ pupa@^2.0.1:
   dependencies:
     escape-goat "^2.0.0"
 
-qrcode@^1.3.3:
+qrcode@^1.3.3, qrcode@^1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/qrcode/-/qrcode-1.4.4.tgz#f0c43568a7e7510a55efc3b88d9602f71963ea83"
   integrity sha512-oLzEC5+NKFou9P0bMj5+v6Z40evexeE29Z9cummZXZ9QXyMr3lphkURzxjXgPJC5azpxcshoDWV1xE46z+/c3Q==
@@ -5322,6 +5330,11 @@ ws@^3.0.0:
     async-limiter "~1.0.0"
     safe-buffer "~5.1.0"
     ultron "~1.1.0"
+
+ws@^7.3.0:
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/ws/-/ws-7.3.1.tgz#d0547bf67f7ce4f12a72dfe31262c68d7dc551c8"
+  integrity sha512-D3RuNkynyHmEJIpD2qrgVkc9DQ23OrN/moAwZX4L8DfvszsJxpjQuUq3LMx6HoYji9fbIOBY18XWBsAux1ZZUA==
 
 xdg-basedir@^4.0.0:
   version "4.0.0"
