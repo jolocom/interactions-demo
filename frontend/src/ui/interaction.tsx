@@ -25,7 +25,7 @@ export const InteractionContainer = ({ jwtCommand }: { jwtCommand: string }) => 
       setJwt('')
       setEncryptReady(true)
       params.set('id', identifier);
-      window.history.replaceState(null, '', `${window.location.pathname}?${params}`);
+      window.history.pushState(null, '', `${window.location.pathname}?${params}`);
     })
     .catch((e: any) => setErr(e))
   }
