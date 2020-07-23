@@ -25,7 +25,7 @@ The `service_agent` needs to know its "public" facing "host:port" address to be
 able to embed it in the interaction tokens, such the the SmartWallet can find
 the agent.
 
-To successfully go through the demo, change the `PUBLIC_HOSTPORT` environment
+To successfully go through the demo, change the `SERVICE_HOSTPORT` environment
 variable inside `docker-compose.yml` to a value that the mobile phone can
 access, probably the LAN IP address of the computer running the `service_agent`,
 assuming the test SmartWallet is on the same LAN
