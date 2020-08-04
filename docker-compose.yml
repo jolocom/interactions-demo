@@ -18,7 +18,7 @@ services:
       - "9000:9000"
     environment:
       JWT_COMMAND: 'docker-compose run rpc_agent start'
-      PUBLIC_HOSTPORT: 'service_agent:9000'
+      SERVICE_HOSTPORT: 'service_agent:9000'
       DEBUG: 1
 
   rpc_agent:
