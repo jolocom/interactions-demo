@@ -1,9 +1,8 @@
 {
-  "name": "hapi-jolocom-backend",
+  "name": "jolocom-demo-backend",
   "version": "0.1.0",
-  "main": "index.js",
-  "repository": "https://github.com/jolocom/hapi-jolocom-backend",
-  "author": "Charles Cunningham",
+  "main": "index.ts",
+  "author": "Jolocom Dev <dev@jolocom.io>",
   "license": "MIT",
   "private": false,
   "scripts": {
@@ -13,17 +12,18 @@
   "devDependencies": {
     "@types/ws": "^7.2.4",
     "nodemon": "^2.0.4",
-    "tslib": "^2.0.0",
+    "tslib": "^2.0.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {
     "@hapi/hapi": "18",
-    "@jolocom/sdk": "^0.13.0",
+    "@hapi/inert": "^6.0.1",
+    "@jolocom/sdk": "^0.15.0",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^1.1.0",
-    "hapi-jolocom": "^0.4.2",
+    "hapi-jolocom": "^1.0.1",
     "hapi-plugin-websocket": "^2.3.0",
-    "jolocom-lib": "^4.3.3",
+    "jolocom-lib": "^4.4.1",
     "sqlite3": "^4.2.0",
     "typeorm": "^0.2.24"
   }

@@ -1,11 +1,13 @@
 import * as hapi from '@hapi/hapi'
 import * as HAPIWebSocket from 'hapi-plugin-websocket'
-import { JolocomRPCProxyPlugin } from 'hapi-jolocom/dist/rpc'
-import { JolocomAuthPlugin } from 'hapi-jolocom/dist/auth'
+import { HapiJolocomWebService } from 'hapi-jolocom'
 
-import { JolocomSDK } from "@jolocom/sdk"
+import { JolocomSDK, CredentialOffer, JSONWebToken } from "@jolocom/sdk"
 import { FilePasswordStore } from "@jolocom/sdk-password-store-filesystem"
 import { JolocomTypeormStorage } from "@jolocom/sdk-storage-typeorm"
+import { CredentialRenderTypes } from 'hapi-jolocom/node_modules/jolocom-lib/js/interactionTokens/interactionTokens.types'
+import { ISignedCredentialAttrs } from 'hapi-jolocom/node_modules/jolocom-lib/js/credentials/signedCredential/types'
+import { Credential } from 'jolocom-lib/js/credentials/credential/credential'
 
 const typeorm = require("typeorm")
 
@@ -22,66 +24,166 @@ const typeormConfig = {
   }
 }
 
+const DemoCredTypeConstant = 'DemoCred'
+
+const demoCredMetadata = {
+  type: ['Credential', DemoCredTypeConstant],
+  name: 'Demonstration Credential',
+  context: [
+    {
+      name: 'schema:name',
+      description: 'schema:description'
+    }
+  ]
+}
+
+const demoCredOffer: CredentialOffer = {
+  type: DemoCredTypeConstant, // NOTE: this actually doesn't necessarily need to match
+  requestedInput: {}, // currently not used
+  renderInfo: {
+    renderAs: CredentialRenderTypes.document,
+    background: {
+      color: '#420'
+    }
+  }
+}
+const offeredCredentials =  [demoCredOffer]
+
 export const init = async () => {
   const passwordStore = new FilePasswordStore(__dirname+'/../password.txt')
   const connection = await typeorm.createConnection(typeormConfig)
   const storage = new JolocomTypeormStorage(connection)
 
-  const sdk = new JolocomSDK({
+  const jolo = new JolocomSDK({
     storage,
     passwordStore
   })
 
   const port = process.env.PUBLIC_PORT || 9000;
-  await sdk.init()
+  await jolo.init()
 
   const server = new hapi.Server({
     port,
     debug: {
       request: ["*"]
     },
-    // listener: nodeListener
   });
 
-  // server.bind(sdk)
 
   await server.register(HAPIWebSocket)
 
-  const rpcMap = {
-    asymEncrypt: async (request, { ch }) => {
-      const ssiMsg = await sdk.rpcEncRequest({
-        toEncrypt: Buffer.from(request),
-        target: `${ch.did}#keys-1`,
-        callbackURL: ''
-      })
-      const resp = await ch.sendSSIMessage(ssiMsg)
-      return resp.payload.interactionToken.result
-    },
-    asymDecrypt: async (request, { ch }) => {
-      const ssiMsg = await sdk.rpcDecRequest({
-        toDecrypt: Buffer.from(request, 'base64'),
-        callbackURL: ''
-      })
-      const resp = await ch.sendSSIMessage(ssiMsg)
-      return resp.payload.interactionToken.result
-    },
-  }
+  /**
+   * Using the "HapiJolocomWebService"
+   */
+  const joloPlugin = new HapiJolocomWebService(jolo, {
+    tls: !!process.env.SERVICE_TLS || false,
+    publicHostport: process.env.SERVICE_HOSTPORT || 'localhost:9000',
 
-  await server.register({
-    plugin: new JolocomRPCProxyPlugin(sdk, {
-      rpcMap,
-      tls: !!process.env.SERVICE_TLS || false,
-      publicHostport: process.env.SERVICE_HOSTPORT || 'localhost:9000'
-    }),
-    routes: {
-      prefix: '/rpcProxy',
+    extraRouteConfig: {
+      // BIG WARNING
+      cors: { origin: ['*'] }, // FIXME lift up to config.ts or something and add
+      // BIG WARNING
+    },
+
+    rpcMap: {
+
+      /**
+       * Channeled Interactions
+       */
+      createDemoChannel: async (args, { createChannel, wrapJWT }) => {
+        const ch = await createChannel({ description: 'A Jolocom Demo' })
+        return wrapJWT(ch.initialInteraction.getMessages()[0])
+      },
+      waitForChannelAuth: async ({ chId }: { chId: string }) => {
+        const ch = await jolo.channels.get(chId)
+        await ch.authPromise
+        return ch.getSummary()
+      },
+      remoteEncrypt: async (request: { chId, data }) => {
+        const ch = await jolo.channels.get(request.chId)
+        const otherDid = ch.counterparty && ch.counterparty.did
+        if (!otherDid) throw new Error('no counterparty!')
+
+        const ssiMsg = await jolo.rpcEncRequest({
+          toEncrypt: Buffer.from(request.data),
+          target: `${otherDid}#enc-1`,
+          callbackURL: ''
+        })
+        const resp = await ch.sendQuery(ssiMsg)
+        return resp.payload.interactionToken.result
+      },
+
+      remoteDecrypt: async (request: { chId, data }) => {
+        const ch = await jolo.channels.get(request.chId)
+
+        const ssiMsg = await jolo.rpcDecRequest({
+          toDecrypt: Buffer.from(request.data, 'base64'),
+          callbackURL: ''
+        })
+        const resp = await ch.sendQuery(ssiMsg)
+        return resp.payload.interactionToken.result
+      },
+
+
+      /**
+       * "Classic" interactions
+       */
+      getCredentialTypes: async () => {
+        return offeredCredentials.map(o => o.type)
+      },
+      offerCred: async (req: { types: string[], invalid?: string[] }, { createInteractionCallbackURL, wrapJWT }) => {
+        const filteredOfferedCreds = req.types.map(t => offeredCredentials.find(o => o.type == t))
+        if (filteredOfferedCreds.length === 0) throw new Error('no offers matching provided "types" parameter')
+        const invalidTypes = req.invalid
+
+        const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+          const interxn = await jolo.processJWT(jwt)
+          console.log('offerCred called back for', interxn.id)
+
+          const credentials = await interxn.issueSelectedCredentials({
+            [DemoCredTypeConstant]: async (requestedInput?: any) => {
+              let subject
+              if (invalidTypes.includes(DemoCredTypeConstant)) subject = 'INVALID'
+              return {
+                claim: {
+                  message: 'Demo Credential for ' + interxn.participants.responder.did,
+                },
+                metadata: demoCredMetadata,
+              }
+            }
+          })
+          console.log('credentials issued', credentials)
+          return interxn.createCredentialReceiveToken(credentials)
+        })
+
+        return wrapJWT(
+          await jolo.credOfferToken({
+            callbackURL,
+            offeredCredentials: filteredOfferedCreds
+          })
+        )
+      },
+
+      authnInterxn: async (req: { description: string }, { createInteractionCallbackURL, wrapJWT }) => {
+        const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+          const interxn = await jolo.processJWT(jwt)
+          console.log('auth request handled for', interxn.counterparty)
+        })
+        return wrapJWT(
+          await jolo.authRequestToken({
+            description: req.description,
+            callbackURL
+          })
+        )
+      }
     }
   });
 
+
   await server.register({
-    plugin: new JolocomAuthPlugin(sdk),
+    plugin: joloPlugin,
     routes: {
-      prefix: '/auth'
+      prefix: '/jolo'
     }
   })
 
