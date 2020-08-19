@@ -1,10 +1,11 @@
 const typeorm = require('typeorm')
 const { JolocomTypeormStorage } = require('@jolocom/sdk-storage-typeorm')
-const { JolocomSDK, JSONWebToken } = require('@jolocom/sdk')
+import { JolocomSDK, JSONWebToken } from '@jolocom/sdk'
 const { isEncryptionRequest, isDecryptionRequest } = require('@jolocom/sdk/js/src/lib/interactionManager/guards')
 import { FilePasswordStore } from '@jolocom/sdk-password-store-filesystem'
 import * as WebSocket from 'ws'
-let initialJWT
+import { FlowType, EstablishChannelFlowState } from '@jolocom/sdk/js/src/lib/interactionManager/types'
+import { ChannelTransportAPI, ChannelTransportType, ChannelTransport } from '@jolocom/sdk/js/src/lib/channels'
 
 const typeormConfig = {
   type: 'sqlite',
@@ -19,8 +20,55 @@ const typeormConfig = {
   },
 }
 
+const WebSocketsTransportFactory = (transport: ChannelTransport) => {
+  console.log('creating websocket', transport)
+  let _q: string[] = []
+  let _qPromiseResolve, _qPromise: Promise<void>
+    const _qPromiseRefresh = () => {
+      if (_qPromise) return
+      _qPromise = new Promise<void>(resolve => {
+        _qPromiseResolve = resolve
+      }).finally(() => _qPromise = _qPromiseResolve = null)
+    }
+  _qPromiseRefresh()
+  const _qPush = (val) => {
+    _q.push(val)
+    if (_qPromise) _qPromiseResolve()
+  }
+  const _qNext = async () => {
+    if (_q.length == 0) await _qPromise
+    const ret = _q.shift()
+    _qPromiseRefresh()
+    return ret
+  }
+
+  const readyPromise = new Promise<void>(resolve => {
+    const ws = new WebSocket(transport.config)
+    ws.on('open', function open() {
+      console.log('Websocket opened to', transport.config)
+      transportAPI.send = (m:string) => ws.send(JSON.stringify(m))
+      transportAPI.receive = _qNext
+      resolve()
+    });
+
+    ws.on('message', function incoming(message) {
+      console.log('received websocket message:', message)
+      const data = message.trim()
+      if (data) _qPush(data)
+    })
+  })
+
+  // @ts-ignore
+  const transportAPI: ChannelTransportAPI = {
+    ready: readyPromise,
+  }
+
+  return transportAPI
+}
+
 async function start() {
-  if (!process.argv[2]) {
+  const initialJWT = process.argv[2]
+  if (!initialJWT) {
     console.error(`Usage ${process.argv0} {JWT}`)
     process.exit(1)
   }
@@ -32,114 +80,57 @@ async function start() {
   console.log('About to create JolocomSDK instance')
   const sdk = new JolocomSDK({ storage, passwordStore })
 
+  sdk.channels.registerTransportHandler(ChannelTransportType.WebSockets, WebSocketsTransportFactory)
+
   // Running init with no arguments will:
   // - create an identity if it doesn't exist
   // - load the identity from storage
   const identityWallet = await sdk.init()
+
+
+  // @ts-ignore FIXME in sdk
   console.log('Agent identity', identityWallet.identity)
 
   /**
    * RESPONDER
    */
-  initialJWT = process.argv[2]
-  // FIXME instead of this should go through SDK using consumeAuthToken for
-  // example
-  const token = JSONWebToken.decode(initialJWT)
+  const interxn = await sdk.processJWT(initialJWT)
 
+  if (interxn.flow.type !== FlowType.EstablishChannel)
+    throw new Error('interaction type "' + interxn.flow.type + '" is not an "EstablishChannel!"')
 
-  const wsURL = token.payload.interactionToken.callbackURL
-  console.log('payload is here, need to get the ws:// url out!', token.payload, wsURL)
+  const flowState = interxn.flow.state as EstablishChannelFlowState
+  const transports = flowState.transports
+  let transportIdx = transports.findIndex((t, i) => t.type === ChannelTransportType.WebSockets)
+  if (transportIdx < 0) {
+    throw new Error('no "' + ChannelTransportType.WebSockets + '" transport found!')
+  }
 
-  const ws = new WebSocket(wsURL)
+  const resp = await interxn.createEstablishChannelResponse(transportIdx)
+  await interxn.processInteractionToken(resp)
 
-  let ready = false
-  ws.on('open', function open() {
-    console.log('Websocket opened to', wsURL)
-    consumeAuthToken(sdk, initialJWT).then(response => {
-      console.log('response', response)
-      ws.send(JSON.stringify(response))
-    })
-  });
-
-  ws.on('message', function incoming(message) {
-    if (!ready) {
-      ready = true
-      console.log('READY!')
-      //ws.send(JSON.stringify({}))
-      return
+  const ch = await sdk.channels.create(interxn)
+  ch.send(resp.encode())
+  ch.start(async (interxn) => {
+    let resp
+    // TODO: make this configurable
+    //       for now hardcoded
+    switch (interxn.flow.type) {
+      case FlowType.Authentication:
+        resp = await interxn.createAuthenticationResponse()
+        break
+      case FlowType.Encrypt:
+        resp = await interxn.createEncResponseToken()
+        break
+      case FlowType.Decrypt:
+        resp = await interxn.createDecResponseToken()
+        break
     }
-    console.log('received message:', message)
-    if (!message.trim()) {
-      console.log('no payload')
-      return
-    }
-    const token = JSONWebToken.decode(message)
-    console.log('decoded to token:', token.nonce);
-    if (!ready) {
-      console.log('discarding message because not ready')
-      return
-    } else {
-      console.log('consuming RPC')
-      consumeRPCToken(sdk, message).then(result => {
-        console.log('sent result', result)
-        ws.send(JSON.stringify(result))
-      })
+
+    if (resp) {
+      ch.send(resp.encode())
     }
   })
 }
 
 start()
-
-// for ws.onMessage() try to consume the token and begin an interaction
-async function consumeAuthToken(sdk, jwt) {
-  // see sdk/sso/authenticationRequest
-  const token = JSONWebToken.decode(jwt)
-  const { interactionManager } = sdk.bemw
-  let interaction
-  try {
-    interaction = await interactionManager.start(
-      '', // channel,
-      token
-    )
-  } catch (err) {
-    console.error('failed to start interaction')
-    throw err
-  }
-
-  let response
-  try {
-    response = await interaction.createAuthenticationResponse()
-    // FIXME this doesn't work because new transport layer WS
-    // interaction.send(response)
-  } catch (err) {
-    console.error('failed to createAuthenticationResponse')
-    throw err
-  }
-
-  return response.encode()
-}
-// for ws.onMessage() try to consume the token and begin an interaction
-async function consumeRPCToken(sdk, jwt) {
-  // see sdk/sso/authenticationRequest
-  const token = JSONWebToken.decode(jwt)
-  const weGood = await sdk.tokenRecieved(jwt)
-  if (!weGood) {
-    throw new Error('could not process token: ' + jwt)
-  }
-
-  const { interactionManager } = sdk.bemw
-  const interaction = interactionManager.getInteraction(token.nonce)
-  const rpcToken = token.payload.interactionToken
-
-  let respToken
-  if (isEncryptionRequest(rpcToken)) {
-    respToken = await interaction.createEncResponseToken()
-  } else if (isDecryptionRequest(rpcToken)) {
-    debugger
-    respToken = await interaction.createDecResponseToken()
-  } else {
-    throw new Error('of course')
-  }
-
-  return respToken.encode()
-}
