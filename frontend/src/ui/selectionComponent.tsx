@@ -16,6 +16,7 @@ export const SelectionComponent = (props: Props) => {
       {options.map(item => {
         return (
           <button
+            key={item}
             style={{
               borderRadius: '10px',
               margin: '10px',

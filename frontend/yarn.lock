@@ -1079,6 +1079,11 @@
     "@types/istanbul-reports" "^1.1.1"
     "@types/yargs" "^12.0.9"
 
+"@jolocom/web-service-client@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@jolocom/web-service-client/-/web-service-client-1.0.0.tgz#2da8d162ac4b08a4e7820cb1c30e17bb7e41342a"
+  integrity sha512-jAVsBct+dwM9XTyLg6Ihk1b5h6gr09qIQeBK3d4AyfE6zAbAmfXLV2uM00OQtMbvzwNUYpM/MeNzoKy1PFdGIA==
+
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/@mrmlnc/readdir-enhanced/-/readdir-enhanced-2.2.1.tgz#524af240d1a360527b730475ecfa1344aa540dde"

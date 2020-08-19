@@ -1,40 +1,171 @@
-import React, { useState } from 'react'
-import { getQrCode, awaitStatus, getEncryptedData, getDecryptedData } from '../utils/sockets'
+import React, { useState, useEffect } from 'react'
+import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import { InteractionButton } from './interactionButton'
+import { SelectionComponent } from './selectionComponent'
+import {
+  InteractionType,
+  ShareCredentials,
+} from '../config'
 
-export const InteractionContainer = ({ jwtCommand }: { jwtCommand: string }) => {
-  const [identifier, setIdentifier] = useState<string>('')
-  const [qr, setQr] = useState<string>('')
-  const [jwt, setJwt] = useState<string>('')
-  const [err, setErr] = useState<boolean>(false)
+interface Props {
+  interactionType: InteractionType
+}
 
-  const [encryptInput, setEncryptInput] = useState('')
-  //const [decryptInput, setDecryptInput] = useState('')
-  const [encryptOutput, setEncryptOutput] = useState<string>('')
-  //const [decryptOutput, setdecryptOutput] = useState<string>('')
-  const [encryptReady, setEncryptReady] = useState(false)
+export const AuthContainer = (
+{
+  serviceAPI,
+}: {
+  serviceAPI: JolocomWebServiceClient,
+}) => {
+  /*
+      {interactionType === InteractionType.Share && (
+        <SelectionComponent
+          title={'Request Credentials'}
+          options={availableShareCredentials}
+          onSelect={type =>
+            setRequested(handleSelect(requestedCredentials, type))
+          }
+          selectedItems={requestedCredentials}
+        />
+      )}
+      */
 
-  const onClickStart = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const { authTokenQR, authTokenJWT, identifier } = await getQrCode('rpcProxy', params.get('id'))
-    setQr(authTokenQR)
-    setJwt(authTokenJWT)
-    setIdentifier(identifier)
-    awaitStatus(identifier).then(() => {
-      setQr('')
-      setJwt('')
-      setEncryptReady(true)
-      params.set('id', identifier);
-      window.history.pushState(null, '', `${window.location.pathname}?${params}`);
+  const [description, setDescription] = useState<string>('Unlock your scooter')
+  const startAuth = async () => {
+    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('authnInterxn', {
+      description
     })
-    .catch((e: any) => setErr(e))
+    console.log(resp)
+    return resp
   }
 
-  const onClickEncrypt = async () => {
-    getEncryptedData(identifier, encryptInput).then(setEncryptOutput)
+  return (
+    <InteractionContainer
+      startText="Start Authentication Interaction"
+      startHandler={startAuth}
+    >
+      <div style={{ paddingTop: '20px' }}>
+        <h4>Description</h4>
+        <input
+          style={{
+            margin: '10px',
+            width: '100%',
+          }}
+          type="text"
+          name="description"
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+        />
+      </div>
+    </InteractionContainer>
+  )
+}
+
+export const CredOfferContainer = (
+{
+  serviceAPI,
+  credTypes
+}: {
+  serviceAPI: JolocomWebServiceClient,
+  credTypes: string[]
+}) => {
+  // TODO use Set instead of array
+  const [issuedCredentials, setIssued] = useState<Array<string>>([])
+  const [invalidCredentials, setInvalid] = useState<Array<string>>([])
+  const [requestedCredentials, setRequested] = useState<Array<string>>([
+    ShareCredentials.Email,
+  ])
+  const availableIssueCredentials = credTypes
+  const availableShareCredentials = [
+    ...Object.values(ShareCredentials),
+    ...availableIssueCredentials,
+  ]
+
+  const handleSelect = (array: string[], item: string) => {
+    return !array.includes(item)
+      ? [...array, item]
+      : array.filter(val => val !== item)
   }
-  const onClickDecrypt = async () => {
-    getDecryptedData(identifier, encryptInput).then(setEncryptOutput)
+
+  useEffect(() => {
+    if (issuedCredentials.length === 0 && credTypes && credTypes.length > 0) {
+      setIssued(credTypes.slice(0,1))
+    }
+  })
+
+  const startCredOffer = async () => {
+    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('offerCred', {
+      types: Array.from(new Set(issuedCredentials)),
+      invalid: Array.from(new Set(invalidCredentials)),
+    })
+    console.log(resp)
+    return resp
+  }
+    //setJwt(resp.jwt)
+    //setIdentifier(resp.id)
+
+    /*
+    const { qrCode, socket, identifier } = await getQrCode(interactionType, {
+      ...(interactionType === InteractionType.Receive && {
+        types: Array.from(new Set(issuedCredentials)),
+        invalid: Array.from(new Set(invalidCredentials)),
+      }),
+      ...(interactionType === InteractionType.Share && {
+        types: Array.from(new Set(requestedCredentials)),
+      }),
+      ...(interactionType === InteractionType.Auth && {
+        desc: description,
+      }),
+    })
+
+    setQr(qrCode)
+    awaitStatus(identifier)
+      .then((obj: any) => {
+        if (obj.status === 'success') setQr('')
+      })
+      .catch(e => setErr(e))
+    */
+
+  return (
+    <InteractionContainer
+      startText="Start Credential Offer"
+      startHandler={startCredOffer}
+    >
+      <h2>Credential Offer</h2>
+      <SelectionComponent
+        title={'Available Credentials'}
+        options={availableIssueCredentials}
+        onSelect={type => setIssued(handleSelect(issuedCredentials, type))}
+        selectedItems={issuedCredentials}
+      />
+      <SelectionComponent
+        title={'Break Credentials'}
+        options={issuedCredentials}
+        onSelect={type =>
+          setInvalid(handleSelect(invalidCredentials, type))
+        }
+        selectedItems={invalidCredentials}
+      />
+    </InteractionContainer>
+  )
+}
+
+export const InteractionContainer = ({
+  startHandler,
+  startText,
+  children
+} : {
+  startHandler: () => Promise<{ qr?: string, err?: string }>,
+  startText: string,
+  children: React.ReactNode
+}) => {
+  const [qr, setQr] = useState<string | undefined>()
+  const [err, setErr] = useState<string | undefined>()
+
+  const startBtnHandler = async () => {
+    const resp = await startHandler()
+    setQr(resp.qr)
+    setErr(resp.err)
   }
 
   return (
@@ -50,7 +181,7 @@ export const InteractionContainer = ({ jwtCommand }: { jwtCommand: string }) => 
         borderRadius: '40px',
       }}
     >
-      <h2>RPC Encrypt/Decrypt Demo</h2>
+      {children}
       <div
         style={{
           width: '100%',
@@ -61,67 +192,15 @@ export const InteractionContainer = ({ jwtCommand }: { jwtCommand: string }) => 
           padding: '20px',
         }}
       >
-        {encryptReady ? (
-          <>
-            <div style={{ paddingTop: '20px', width: '100%' }}>
-              <h4>Input Data</h4>
-              <input
-                style={{
-                  margin: '10px',
-                  width: '100%',
-                  maxWidth: '500px',
-                }}
-                type="text"
-                name="description"
-                value={encryptInput}
-                onChange={e => setEncryptInput(e.target.value)}
-              />
-            </div>
-            <InteractionButton
-              onClick={onClickEncrypt}
-              text={'Request Encryption'}
-            />
-            <InteractionButton
-              onClick={onClickDecrypt}
-              text={'Request Decryption'}
-            />
-          </>
-        ) : (
-          <InteractionButton onClick={onClickStart} text={'Start RPC Demo'} />
-        )}
+        <InteractionButton
+          onClick={startBtnHandler}
+          text={startText}
+        />
 
         {err ? (
           <b>Error</b>
         ) : (
-          jwt && (<div>
-            <div style={{
-              wordWrap: 'break-word', maxWidth: '50vw',
-              whiteSpace: 'pre-wrap', fontFamily: 'monospace'
-              }}>
-              {jwtCommand} {jwt}
-            </div>
-          </div>)
-        )}
-
-        {!err && qr && (<img src={qr} />)}
-
-        {!!encryptOutput.length && (
-          <>
-            <h4>Output Data</h4>
-            <div
-              style={{
-                border: '1px solid black',
-                padding: '20px',
-                backgroundColor: 'white',
-                width: '500px',
-                textAlign: 'center',
-                overflowWrap: 'break-word',
-                borderRadius: '10px',
-              }}
-            >
-              <i>{encryptOutput}</i>
-            </div>
-          </>
+          qr && <img src={qr} className="c-qrcode" alt="QR Code" />
         )}
       </div>
     </div>
