@@ -18,7 +18,7 @@
   "dependencies": {
     "@hapi/hapi": "18",
     "@hapi/inert": "^6.0.1",
-    "@jolocom/sdk": "^0.15.0",
+    "@jolocom/sdk": "^0.16.0",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^1.1.0",
     "hapi-jolocom": "^1.0.1",
