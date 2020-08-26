@@ -87,6 +87,17 @@ export const init = async () => {
     },
 
     rpcMap: {
+      peerResolutionInterxn: async (args, { createInteractionCallbackURL, wrapJWT }) => {
+        const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+          const interxn = await jolo.processJWT(jwt)
+          console.log('peer resolution request request handled for', interxn.counterparty)
+        })
+        return wrapJWT(
+          await jolo.resolutionRequestToken({
+            callbackURL
+          })
+        )
+      },
 
       /**
        * Channeled Interactions
