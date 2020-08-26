@@ -5,8 +5,8 @@ import { HapiJolocomWebService } from 'hapi-jolocom'
 import { JolocomSDK, CredentialOffer, JSONWebToken } from "@jolocom/sdk"
 import { FilePasswordStore } from "@jolocom/sdk-password-store-filesystem"
 import { JolocomTypeormStorage } from "@jolocom/sdk-storage-typeorm"
-import { CredentialRenderTypes } from 'hapi-jolocom/node_modules/jolocom-lib/js/interactionTokens/interactionTokens.types'
-import { ISignedCredentialAttrs } from 'hapi-jolocom/node_modules/jolocom-lib/js/credentials/signedCredential/types'
+import { CredentialRenderTypes } from 'jolocom-lib/js/interactionTokens/interactionTokens.types'
+import { ISignedCredentialAttrs } from 'jolocom-lib/js/credentials/signedCredential/types'
 import { Credential } from 'jolocom-lib/js/credentials/credential/credential'
 
 const typeorm = require("typeorm")
@@ -60,7 +60,8 @@ export const init = async () => {
   })
 
   const port = process.env.PUBLIC_PORT || 9000;
-  await jolo.init()
+  const ident = await jolo.init()
+  console.log('Agent ready', ident)
 
   const server = new hapi.Server({
     port,
@@ -106,7 +107,7 @@ export const init = async () => {
 
         const ssiMsg = await jolo.rpcEncRequest({
           toEncrypt: Buffer.from(request.data),
-          target: `${otherDid}#enc-1`,
+          target: otherDid,
           callbackURL: ''
         })
         const resp = await ch.sendQuery(ssiMsg)
@@ -121,7 +122,7 @@ export const init = async () => {
           callbackURL: ''
         })
         const resp = await ch.sendQuery(ssiMsg)
-        return resp.payload.interactionToken.result
+        return Buffer.from(resp.payload.interactionToken.result, 'base64').toString()
       },
 
 
