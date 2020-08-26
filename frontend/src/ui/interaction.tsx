@@ -17,24 +17,9 @@ export const AuthContainer = (
 }: {
   serviceAPI: JolocomWebServiceClient,
 }) => {
-  /*
-      {interactionType === InteractionType.Share && (
-        <SelectionComponent
-          title={'Request Credentials'}
-          options={availableShareCredentials}
-          onSelect={type =>
-            setRequested(handleSelect(requestedCredentials, type))
-          }
-          selectedItems={requestedCredentials}
-        />
-      )}
-      */
-
-  const [description, setDescription] = useState<string>('Unlock your scooter')
+  //const [description, setDescription] = useState<string>('Unlock your scooter')
   const startAuth = async () => {
-    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('authnInterxn', {
-      description
-    })
+    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('peerResolutionInterxn')
     console.log(resp)
     return resp
   }
@@ -45,7 +30,7 @@ export const AuthContainer = (
       startHandler={startAuth}
     >
       <div style={{ paddingTop: '20px' }}>
-        <h4>Description</h4>
+        {/*<h4>Description</h4>
         <input
           style={{
             margin: '10px',
@@ -55,7 +40,7 @@ export const AuthContainer = (
           name="description"
           value={description}
           onChange={e => setDescription(e.target.value)}
-        />
+        />*/}
       </div>
     </InteractionContainer>
   )
@@ -155,16 +140,18 @@ export const InteractionContainer = ({
   startText,
   children
 } : {
-  startHandler: () => Promise<{ qr?: string, err?: string }>,
+  startHandler: () => Promise<{ qr?: string, jwt?: string, err?: string }>,
   startText: string,
   children: React.ReactNode
 }) => {
   const [qr, setQr] = useState<string | undefined>()
+  const [jwt, setJwt] = useState<string>()
   const [err, setErr] = useState<string | undefined>()
 
   const startBtnHandler = async () => {
     const resp = await startHandler()
     setQr(resp.qr)
+    setJwt(resp.jwt)
     setErr(resp.err)
   }
 
@@ -200,7 +187,18 @@ export const InteractionContainer = ({
         {err ? (
           <b>Error</b>
         ) : (
-          qr && <img src={qr} className="c-qrcode" alt="QR Code" />
+          jwt && (<div>
+            <div style={{
+              wordWrap: 'break-word', maxWidth: '50vw',
+              whiteSpace: 'pre-wrap', fontFamily: 'monospace'
+              }}>
+              {jwt}
+            </div>
+          </div>)
+        )}
+
+        {!err && qr && (
+          <img src={qr} className="c-qrcode" alt="QR Code" />
         )}
       </div>
     </div>

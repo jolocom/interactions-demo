@@ -35,13 +35,13 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
       </header>
       <main className="main">
         <article className="c-qrcode-container">
+          <AuthContainer
+            serviceAPI={serviceAPI}
+          />
           <EstablishChannelContainer serviceAPI={serviceAPI} jwtCommand={jwtCommand} />
           <CredOfferContainer
             serviceAPI={serviceAPI}
             credTypes={availableCredTypes} />
-          <AuthContainer
-            serviceAPI={serviceAPI}
-          />
           {/*
           <InteractionContainer interactionType={InteractionType.Receive} />
           <InteractionContainer interactionType={InteractionType.Share} />
