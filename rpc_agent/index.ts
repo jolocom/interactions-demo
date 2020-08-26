@@ -7,6 +7,9 @@ import * as WebSocket from 'ws'
 import { FlowType, EstablishChannelFlowState } from '@jolocom/sdk/js/src/lib/interactionManager/types'
 import { ChannelTransportAPI, ChannelTransportType, ChannelTransport } from '@jolocom/sdk/js/src/lib/channels'
 
+// @ts-ignore
+global.fetch = require('node-fetch')
+
 const typeormConfig = {
   type: 'sqlite',
   database: __dirname + '/db.sqlite3',
@@ -81,6 +84,7 @@ async function start() {
   const sdk = new JolocomSDK({ storage, passwordStore })
 
   sdk.channels.registerTransportHandler(ChannelTransportType.WebSockets, WebSocketsTransportFactory)
+  sdk.setDefaultDidMethod('jun')
 
   // Running init with no arguments will:
   // - create an identity if it doesn't exist
@@ -95,6 +99,12 @@ async function start() {
    * RESPONDER
    */
   const interxn = await sdk.processJWT(initialJWT)
+
+  if (interxn.flow.type == FlowType.Resolution) {
+    const resp = await interxn.createResolutionResponse()
+    await interxn.send(resp)
+    process.exit(0)
+  }
 
   if (interxn.flow.type !== FlowType.EstablishChannel)
     throw new Error('interaction type "' + interxn.flow.type + '" is not an "EstablishChannel!"')
