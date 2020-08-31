@@ -4,10 +4,6 @@ export enum ServiceCredentials {
   ThirdCredential = 'ThirdCredential',
 }
 
-export enum ShareCredentials {
-  Email = 'email',
-}
-
 export enum InteractionType {
   Receive = 'receive',
   Share = 'share',

@@ -5,9 +5,12 @@ import { HapiJolocomWebService } from 'hapi-jolocom'
 import { JolocomSDK, CredentialOffer, JSONWebToken } from "@jolocom/sdk"
 import { FilePasswordStore } from "@jolocom/sdk-password-store-filesystem"
 import { JolocomTypeormStorage } from "@jolocom/sdk-storage-typeorm"
-import { CredentialRenderTypes } from 'jolocom-lib/js/interactionTokens/interactionTokens.types'
+import { CredentialRenderTypes, IConstraint } from 'jolocom-lib/js/interactionTokens/interactionTokens.types'
 import { ISignedCredentialAttrs } from 'jolocom-lib/js/credentials/signedCredential/types'
 import { Credential } from 'jolocom-lib/js/credentials/credential/credential'
+
+import { claimsMetadata } from '@jolocom/protocol-ts'
+import { constraintFunctions } from 'jolocom-lib/js/interactionTokens/credentialRequest'
 
 const typeorm = require("typeorm")
 
@@ -47,7 +50,22 @@ const demoCredOffer: CredentialOffer = {
     }
   }
 }
+
 const offeredCredentials =  [demoCredOffer]
+const requestableCredentials = {
+  ...claimsMetadata,
+  [DemoCredTypeConstant]: demoCredMetadata,
+}
+
+export const generateRequirementsFromConfig = ({
+  issuer,
+  metadata
+}: { issuer?: string, metadata }) => ({
+  type: metadata.type,
+  constraints: (issuer
+    ? [constraintFunctions.is('issuer', issuer)]
+    : [])
+})
 
 export const init = async () => {
   const passwordStore = new FilePasswordStore(__dirname+'/../password.txt')
@@ -59,26 +77,29 @@ export const init = async () => {
     passwordStore
   })
 
-  const port = process.env.PUBLIC_PORT || 9000;
+  const publicHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
+  const publicPort = publicHostport.split(':')[1]
+  const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000;
+
   const ident = await jolo.init()
-  console.log('Agent ready', ident)
 
   const server = new hapi.Server({
-    port,
+    port: listenPort,
     debug: {
+      log: ["*"],
       request: ["*"]
     },
   });
-
-
   await server.register(HAPIWebSocket)
+
+  console.log('Agent ready,', ident.didDocument)
 
   /**
    * Using the "HapiJolocomWebService"
    */
   const joloPlugin = new HapiJolocomWebService(jolo, {
     tls: !!process.env.SERVICE_TLS || false,
-    publicHostport: process.env.SERVICE_HOSTPORT || 'localhost:9000',
+    publicHostport,
 
     extraRouteConfig: {
       // BIG WARNING
@@ -87,6 +108,9 @@ export const init = async () => {
     },
 
     rpcMap: {
+      /**
+       * Authentication Interactions
+       */
       peerResolutionInterxn: async (args, { createInteractionCallbackURL, wrapJWT }) => {
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
@@ -98,9 +122,22 @@ export const init = async () => {
           })
         )
       },
+      authnInterxn: async (req: { description: string }, { createInteractionCallbackURL, wrapJWT }) => {
+        const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+          const interxn = await jolo.processJWT(jwt)
+          console.log('auth request handled for', interxn.counterparty)
+        })
+        return wrapJWT(
+          await jolo.authRequestToken({
+            description: req.description,
+            callbackURL
+          })
+        )
+      },
 
       /**
-       * Channeled Interactions
+       * Channel Interactions
+       * Channels are authenticated lon
        */
       createDemoChannel: async (args, { createChannel, wrapJWT }) => {
         const ch = await createChannel({ description: 'A Jolocom Demo' })
@@ -138,13 +175,18 @@ export const init = async () => {
 
 
       /**
-       * "Classic" interactions
+       * Credential interactions
        */
       getCredentialTypes: async () => {
         return offeredCredentials.map(o => o.type)
       },
       offerCred: async (req: { types: string[], invalid?: string[] }, { createInteractionCallbackURL, wrapJWT }) => {
-        const filteredOfferedCreds = req.types.map(t => offeredCredentials.find(o => o.type == t))
+        const filteredOfferedCreds = req.types.reduce((acc, t) => {
+          const cred = offeredCredentials.find(o => o.type == t)
+          if (cred) return [...acc, cred]
+          else return acc
+        }, [])
+
         if (filteredOfferedCreds.length === 0) throw new Error('no offers matching provided "types" parameter')
         const invalidTypes = req.invalid
 
@@ -176,18 +218,34 @@ export const init = async () => {
         )
       },
 
-      authnInterxn: async (req: { description: string }, { createInteractionCallbackURL, wrapJWT }) => {
+      getRequestableCredentialTypes: async () => {
+        return Object.keys(requestableCredentials)
+      },
+      credShareRequest: async (
+        req: { types: string[], invalid?: string[] },
+        { createInteractionCallbackURL, wrapJWT }
+      ) => {
+        const credTypes = req.types.filter(t => !!requestableCredentials[t])
+
+        if (credTypes.length === 0) throw new Error('no credential types matching provided "types" parameter')
+
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
-          console.log('auth request handled for', interxn.counterparty)
+          console.log('credShareRequest called back for', interxn.id)
+        })
+
+        const credentialRequirements = credTypes.map((credentialType) => {
+          return generateRequirementsFromConfig({
+            metadata: requestableCredentials[credentialType]
+          })
         })
         return wrapJWT(
-          await jolo.authRequestToken({
-            description: req.description,
-            callbackURL
+          await jolo.credRequestToken({
+            callbackURL,
+            credentialRequirements
           })
         )
-      }
+      },
     }
   });
 
@@ -200,7 +258,7 @@ export const init = async () => {
   })
 
   await server.start();
-  console.log("running")
+  server.log(["info"], "Hapi server listening on port " + listenPort)
 };
 
 init();

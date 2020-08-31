@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import './reset.css'
 import './App.css'
-import { InteractionContainer, CredOfferContainer, AuthContainer } from './ui/interaction'
+import {
+  InteractionContainer,
+  CredOfferContainer,
+  PeerResolutionContainer,
+  CredShareContainer
+} from './ui/interaction'
 import { EstablishChannelContainer } from './ui/establishChannel'
 import { InteractionType } from './config'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
@@ -21,9 +26,13 @@ interface AppProps {
 
 const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
   const [availableCredTypes, setAvailableCredTypes] = useState<string[]>([])
+  const [requestableCredTypes, setRequestableCredTypes] = useState<string[]>([])
   useEffect(() => {
     serviceAPI.sendRPC('getCredentialTypes').then((credTypes: string[]) => {
       setAvailableCredTypes(credTypes)
+    })
+    serviceAPI.sendRPC('getRequestableCredentialTypes').then((credTypes: string[]) => {
+      setRequestableCredTypes(credTypes)
     })
   }, [serviceAPI])
 
@@ -35,13 +44,19 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
       </header>
       <main className="main">
         <article className="c-qrcode-container">
-          <AuthContainer
+          <PeerResolutionContainer
             serviceAPI={serviceAPI}
           />
           <EstablishChannelContainer serviceAPI={serviceAPI} jwtCommand={jwtCommand} />
+
           <CredOfferContainer
             serviceAPI={serviceAPI}
             credTypes={availableCredTypes} />
+
+          <CredShareContainer
+            serviceAPI={serviceAPI}
+            credTypes={requestableCredTypes}
+          />
           {/*
           <InteractionContainer interactionType={InteractionType.Receive} />
           <InteractionContainer interactionType={InteractionType.Share} />
