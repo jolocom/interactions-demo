@@ -19,12 +19,12 @@
   "dependencies": {
     "@hapi/hapi": "18",
     "@hapi/inert": "^6.0.1",
-    "@jolocom/sdk": "^1.0.0-rc6",
+    "@jolocom/sdk": "^1.0.0-rc7",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^2.0.9",
     "hapi-jolocom": "^1.0.1",
     "hapi-plugin-websocket": "^2.3.0",
-    "jolocom-lib": "^5.1.0-rc3",
+    "jolocom-lib": "^5.1.0-rc5",
     "sqlite3": "^4.2.0",
     "typeorm": "^0.2.24"
   }
