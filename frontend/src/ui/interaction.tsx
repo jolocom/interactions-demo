@@ -237,6 +237,7 @@ export const CredShareContainer = (
       startText="Start Credential Request Interaction"
       startHandler={startCredRequest}
     >
+      <h2>Credential Request</h2>
       <SelectionComponent
         title={'Available Credentials'}
         options={requestableCredTypes}
