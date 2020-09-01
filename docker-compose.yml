@@ -3,26 +3,42 @@ version: '2.1'
 services:
   frontend:
     build: ./frontend
-    ports:
-      - "3000:3000"
     volumes:
       - ./frontend:/app
+      - nginx-static:/var/www
+    command: 'true'
+    environment:
+      #REACT_JWT_COMMAND: 'yarn start'
+      REACT_APP_SERVICE_HOSTPORT: 'interxns.jolocom.io'
+      REACT_APP_SERVICE_TLS: 1
+      BUILD_OUTPUT: '/var/www/interxns-demo'
 
   service_agent:
     build: ./sdk
     image: jolocom/sdk
     restart: unless-stopped
+    networks:
+      - default
+      - nginx-proxy
     volumes:
       - ./service_agent:/app
-    ports:
-      - "9000:9000"
     environment:
-      JWT_COMMAND: 'docker-compose run rpc_agent start'
-      SERVICE_HOSTPORT: 'service_agent:9000'
+      SERVICE_HOSTPORT: 'interxns.jolocom.io'
+      SERVICE_LISTEN_PORT: 9000
+      SERVICE_TLS: 1
       DEBUG: 1
+      LETSENCRYPT_HOST: 'interxns.jolocom.io'
+      LETSENCRYPT_EMAIL: 'dev@jolocom.io'
+      VIRTUAL_PROTO: 'http+static'
+      VIRTUAL_HOST: 'interxns.jolocom.io'
+      VIRTUAL_ROOT: 'interxns-demo'
+      VIRTUAL_PROXY_PATH: '~ /jolo/'
+      VIRTUAL_NETWORK: 'nginx-proxy'
 
-  rpc_agent:
-    build: ./sdk
-    image: jolocom/sdk
-    volumes:
-      - ./rpc_agent:/app
+volumes:
+  nginx-static:
+    external: true
+
+networks:
+  nginx-proxy:
+    external: true
