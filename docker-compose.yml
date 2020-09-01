@@ -17,6 +17,8 @@ services:
     build: ./sdk
     image: jolocom/sdk
     restart: unless-stopped
+    expose:
+      - "9000"
     networks:
       - default
       - nginx-proxy
