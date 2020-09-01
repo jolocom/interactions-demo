@@ -3,7 +3,7 @@ set -ex
 
 yarn install
 
-if [ "${BUILD_OUTPUT#-}" == "${BUILD_OUTPUT}" ]; then
+if [ "${BUILD_OUTPUT#-}" = "${BUILD_OUTPUT}" ]; then
   yarn build &&
   rm -rf "${BUILD_OUTPUT}" &&
   cp -r build "${BUILD_OUTPUT}"
