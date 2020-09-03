@@ -7,10 +7,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@jolocom/sdk": "^0.18.15",
+    "@jolocom/sdk": "^1.0.0-rc7",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
     "@jolocom/sdk-storage-typeorm": "^2.0.9",
-    "jolocom-lib": "^5.0.36",
+    "jolocom-lib": "^5.1.0-rc5",
     "node-fetch": "^2.6.0",
     "sqlite3": "^5.0.0",
     "ts-node": "^9.0.0",
