@@ -12,6 +12,3 @@ export enum InteractionType {
 
 export const joloColor = 'rgb(148, 47, 81)'
 export const selectColor = '#f3c61c'
-
-export const serviceHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
-export const serviceUrl = `http://${serviceHostport}`

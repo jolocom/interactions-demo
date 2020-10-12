@@ -1897,10 +1897,10 @@ graceful-fs@^4.1.2:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
 
-hapi-jolocom@^2.0.0-rc1:
-  version "2.0.0-rc1"
-  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-2.0.0-rc1.tgz#39cdafbb44c42ddb422c0ab8d6a3eccd5c737e39"
-  integrity sha512-QdRwLOFAtK49JEwZ6FZS3oB3bAOLVTI029Uyr5QkUA220aIWvLVng5hpUmSyuqkpQ0gg3Pfl+UZ+hFl3FwkBvg==
+hapi-jolocom@^2.0.0-rc2:
+  version "2.0.0-rc2"
+  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-2.0.0-rc2.tgz#73cc2ad71eb44ca65baec4106188b4bbba537147"
+  integrity sha512-CapeaDMh1L3smS9D8kwDg3Cltuv3kLVOJ4DLJ8jHUoXvMQg9p6rkmqLVUnTB1ODVpkPdo1shlp3auIiMNaIqTg==
   dependencies:
     "@jolocom/web-service-base" "^3.0.0-rc1"
     ws "^7.3.0"
