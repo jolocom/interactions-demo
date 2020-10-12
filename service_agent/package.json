@@ -21,7 +21,7 @@
     "@hapi/inert": "^6.0.1",
     "@jolocom/sdk": "^1.0.0-rc11",
     "@jolocom/sdk-password-store-filesystem": "^0.1.0",
-    "@jolocom/sdk-storage-typeorm": "^2.0.9",
+    "@jolocom/sdk-storage-typeorm": "^3.0.0",
     "hapi-jolocom": "^2.0.0-rc1",
     "hapi-plugin-websocket": "^2.3.0",
     "jolocom-lib": "^5.1.0-rc10",
