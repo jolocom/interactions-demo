@@ -81,7 +81,7 @@ export const init = async () => {
   const publicPort = publicHostport.split(':')[1]
   const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000;
 
-  const jolo = await sdk.initAgent({ passOrStore: passwordStore })
+  const jolo = await sdk.initAgent({ passwordStore: passwordStore })
   const idw = jolo.identityWallet
 
   const server = new hapi.Server({

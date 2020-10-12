@@ -811,10 +811,10 @@
     class-transformer "^0.3.1"
     ramda "^0.27.1"
 
-"@jolocom/sdk@^1.0.0-rc11":
-  version "1.0.0-rc11"
-  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-1.0.0-rc11.tgz#060d6b37f05ca786eb6490a16a74b25f910b9339"
-  integrity sha512-TjeoEjvjDFa2FNgbBE5+dD5IXtf7SWGY1vJ+XGoZbHQ5qELJsbUCbJcSaZPyCK32svLcmxQi4aC35zeAnEx4BQ==
+"@jolocom/sdk@^1.0.0-rc12":
+  version "1.0.0-rc12"
+  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-1.0.0-rc12.tgz#910df7431f37e76e8dd6439e4d6399a119620751"
+  integrity sha512-cpvXQlipwh6/TuadROeoi1s3b6JV9V0IxZ4xUZ3M91g23IekLkv1bGhMPoW0ESX0vLTNNAa4Q1K/OAOzZN2G0g==
   dependencies:
     "@jolocom/protocol-ts" "^0.5.2"
     form-data "^3.0.0"
@@ -827,10 +827,10 @@
   dependencies:
     rfc4648 "^1.4.0"
 
-"@jolocom/web-service-base@^3.0.0-rc1":
-  version "3.0.0-rc1"
-  resolved "https://registry.yarnpkg.com/@jolocom/web-service-base/-/web-service-base-3.0.0-rc1.tgz#67861a7e4765d776b28d067aae598ae421dfbece"
-  integrity sha512-AljSx77YXJ1FZIsWfVZNkAS2kRKGFQ9w//CHLEvzbAZJHYRC2udKQClulHfG3Heiu83ViHwTcOSUR37t4R657Q==
+"@jolocom/web-service-base@^3.0.0-rc2":
+  version "3.0.0-rc2"
+  resolved "https://registry.yarnpkg.com/@jolocom/web-service-base/-/web-service-base-3.0.0-rc2.tgz#d67f7204f9ff464746bf258c947890a7daf39bcb"
+  integrity sha512-A7awrCURPevvAN7WNiTydrxmpe2Z0a1o0inRthPlWog5AelOGr7DrS0LzQi7MKWg7pqoC+tg6fH7SqtMtoYN0g==
   dependencies:
     qrcode "^1.4.4"
     uuid "^8.3.0"
@@ -1897,12 +1897,12 @@ graceful-fs@^4.1.2:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.4.tgz#2256bde14d3632958c465ebc96dc467ca07a29fb"
   integrity sha512-WjKPNJF79dtJAVniUlGGWHYGz2jWxT6VhN/4m1NdkbZ2nOsEF+cI1Edgql5zCRhs/VsQYRvrXctxktVXZUkixw==
 
-hapi-jolocom@^2.0.0-rc2:
-  version "2.0.0-rc2"
-  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-2.0.0-rc2.tgz#73cc2ad71eb44ca65baec4106188b4bbba537147"
-  integrity sha512-CapeaDMh1L3smS9D8kwDg3Cltuv3kLVOJ4DLJ8jHUoXvMQg9p6rkmqLVUnTB1ODVpkPdo1shlp3auIiMNaIqTg==
+hapi-jolocom@^2.0.0-rc3:
+  version "2.0.0-rc3"
+  resolved "https://registry.yarnpkg.com/hapi-jolocom/-/hapi-jolocom-2.0.0-rc3.tgz#c78e85b4767eff1892e14c82ee39c402d5400fff"
+  integrity sha512-uVNuips56CdCIZdEazMtKaFqDdWwvujIrCeGm1FEX1hQ10C7Zieqgrzjb756qASYiRY7iCiJibMQIw/yUllfGA==
   dependencies:
-    "@jolocom/web-service-base" "^3.0.0-rc1"
+    "@jolocom/web-service-base" "^3.0.0-rc2"
     ws "^7.3.0"
 
 hapi-plugin-websocket@^2.3.0:
