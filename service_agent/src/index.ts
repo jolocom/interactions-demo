@@ -1,13 +1,14 @@
+// @ts-ignore
 import * as hapi from '@hapi/hapi'
+// @ts-ignore
 import * as HAPIWebSocket from 'hapi-plugin-websocket'
 import { HapiJolocomWebService } from 'hapi-jolocom'
 
-import { JolocomSDK, CredentialOffer, JSONWebToken } from "@jolocom/sdk"
+import { JolocomSDK } from "@jolocom/sdk"
+// @ts-ignore
 import { FilePasswordStore } from "@jolocom/sdk-password-store-filesystem"
 import { JolocomTypeormStorage } from "@jolocom/sdk-storage-typeorm"
-import { CredentialRenderTypes, IConstraint } from 'jolocom-lib/js/interactionTokens/interactionTokens.types'
-import { ISignedCredentialAttrs } from 'jolocom-lib/js/credentials/signedCredential/types'
-import { Credential } from 'jolocom-lib/js/credentials/credential/credential'
+import { CredentialRenderTypes, CredentialOffer } from 'jolocom-lib/js/interactionTokens/interactionTokens.types'
 
 import { claimsMetadata } from '@jolocom/protocol-ts'
 import { constraintFunctions } from 'jolocom-lib/js/interactionTokens/credentialRequest'
@@ -60,7 +61,7 @@ const requestableCredentials = {
 export const generateRequirementsFromConfig = ({
   issuer,
   metadata
-}: { issuer?: string, metadata }) => ({
+}: { issuer?: string, metadata: { type: string[] } }) => ({
   type: metadata.type,
   constraints: (issuer
     ? [constraintFunctions.is('issuer', issuer)]
@@ -72,16 +73,16 @@ export const init = async () => {
   const connection = await typeorm.createConnection(typeormConfig)
   const storage = new JolocomTypeormStorage(connection)
 
-  const jolo = new JolocomSDK({
+  const sdk = new JolocomSDK({
     storage,
-    passwordStore
   })
 
   const publicHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
   const publicPort = publicHostport.split(':')[1]
   const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000;
 
-  const ident = await jolo.init()
+  const jolo = await sdk.initAgent({ passOrStore: passwordStore })
+  const idw = jolo.identityWallet
 
   const server = new hapi.Server({
     port: listenPort,
@@ -92,7 +93,7 @@ export const init = async () => {
   });
   await server.register(HAPIWebSocket)
 
-  console.log('Agent ready,', ident.didDocument)
+  console.log('Agent ready,', idw.didDocument)
 
   /**
    * Using the "HapiJolocomWebService"
@@ -148,7 +149,7 @@ export const init = async () => {
         await ch.authPromise
         return ch.getSummary()
       },
-      remoteEncrypt: async (request: { chId, data }) => {
+      remoteEncrypt: async (request: { chId: string, data: string }) => {
         const ch = await jolo.channels.get(request.chId)
         const otherDid = ch.counterparty && ch.counterparty.did
         if (!otherDid) throw new Error('no counterparty!')
@@ -158,18 +159,18 @@ export const init = async () => {
           target: otherDid,
           callbackURL: ''
         })
-        const resp = await ch.sendQuery(ssiMsg)
+        const resp = await ch.startThread(ssiMsg)
         return resp.payload.interactionToken.result
       },
 
-      remoteDecrypt: async (request: { chId, data }) => {
+      remoteDecrypt: async (request: { chId: string, data: string }) => {
         const ch = await jolo.channels.get(request.chId)
 
         const ssiMsg = await jolo.rpcDecRequest({
           toDecrypt: Buffer.from(request.data, 'base64'),
           callbackURL: ''
         })
-        const resp = await ch.sendQuery(ssiMsg)
+        const resp = await ch.startThread(ssiMsg)
         return Buffer.from(resp.payload.interactionToken.result, 'base64').toString()
       },
 
@@ -185,10 +186,10 @@ export const init = async () => {
           const cred = offeredCredentials.find(o => o.type == t)
           if (cred) return [...acc, cred]
           else return acc
-        }, [])
+        }, [] as typeof offeredCredentials)
 
         if (filteredOfferedCreds.length === 0) throw new Error('no offers matching provided "types" parameter')
-        const invalidTypes = req.invalid
+        const invalidTypes = req.invalid || []
 
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
@@ -199,8 +200,9 @@ export const init = async () => {
               let subject
               if (invalidTypes.includes(DemoCredTypeConstant)) subject = 'INVALID'
               return {
+                subject,
                 claim: {
-                  message: 'Demo Credential for ' + interxn.participants.responder.did,
+                  message: 'Demo Credential for ' + interxn.participants.responder!.did,
                 },
                 metadata: demoCredMetadata,
               }
