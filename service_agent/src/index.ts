@@ -140,6 +140,22 @@ export const init = async () => {
           })
         )
       },
+
+      authzInterxn: async (req: {description: string, action: string, imageURL: string}, {createInteractionCallbackURL, wrapJWT}) => {
+        const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+          const interxn = await jolo.processJWT(jwt)
+          console.log('authz request handled for', interxn.counterparty)
+        })
+        return wrapJWT(
+          await jolo.authorizationRequestToken({
+            description: req.description,
+            action: req.action,
+            imageURL: req.imageURL,
+            callbackURL
+          })
+        )
+      },
+
       authnInterxn: async (req: { description: string }, { createInteractionCallbackURL, wrapJWT }) => {
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
