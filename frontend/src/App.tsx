@@ -10,6 +10,7 @@ import { EstablishChannelContainer } from './ui/establishChannel'
 import { AuthenticationContainer } from './ui/authenticationContainer'
 import { AuthorizationContainer } from './ui/authorizationContainer'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
+import { RpcRoutes } from './config'
 const jolocomLogo = require('./images/JO_icon.svg')
 
 interface AppProps {
@@ -21,11 +22,13 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
   const [availableCredTypes, setAvailableCredTypes] = useState<string[]>([])
   const [requestableCredTypes, setRequestableCredTypes] = useState<string[]>([])
   useEffect(() => {
-    serviceAPI.sendRPC('getCredentialTypes').then((credTypes: string[]) => {
-      setAvailableCredTypes(credTypes)
-    })
     serviceAPI
-      .sendRPC('getRequestableCredentialTypes')
+      .sendRPC(RpcRoutes.getCredentialTypes)
+      .then((credTypes: string[]) => {
+        setAvailableCredTypes(credTypes)
+      })
+    serviceAPI
+      .sendRPC(RpcRoutes.getRequestableCredentialTypes)
       .then((credTypes: string[]) => {
         setRequestableCredTypes(credTypes)
       })

@@ -2,23 +2,22 @@ import React, { useState, useEffect } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import { InteractionButton } from './interactionButton'
 import { SelectionComponent } from './selectionComponent'
-import {
-  InteractionType,
-} from '../config'
+import { InteractionType, RpcRoutes } from '../config'
 
 interface Props {
   interactionType: InteractionType
 }
 
-export const PeerResolutionContainer = (
-{
+export const PeerResolutionContainer = ({
   serviceAPI,
 }: {
-  serviceAPI: JolocomWebServiceClient,
+  serviceAPI: JolocomWebServiceClient
 }) => {
   //const [description, setDescription] = useState<string>('Unlock your scooter')
   const startAuth = async () => {
-    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('peerResolutionInterxn')
+    const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
+      RpcRoutes.peerResolutionInterxn,
+    )
     console.log(resp)
     return resp
   }
@@ -46,21 +45,16 @@ export const PeerResolutionContainer = (
   )
 }
 
-export const CredOfferContainer = (
-{
+export const CredOfferContainer = ({
   serviceAPI,
-  credTypes
+  credTypes,
 }: {
-  serviceAPI: JolocomWebServiceClient,
+  serviceAPI: JolocomWebServiceClient
   credTypes: string[]
 }) => {
-  // TODO use Set instead of array
   const [issuedCredentials, setIssued] = useState<Array<string>>([])
   const [invalidCredentials, setInvalid] = useState<Array<string>>([])
   const availableIssueCredentials = credTypes
-  const availableShareCredentials = [
-    ...availableIssueCredentials,
-  ]
 
   const handleSelect = (array: string[], item: string) => {
     return !array.includes(item)
@@ -70,42 +64,21 @@ export const CredOfferContainer = (
 
   useEffect(() => {
     if (issuedCredentials.length === 0 && credTypes && credTypes.length > 0) {
-      setIssued(credTypes.slice(0,1))
+      setIssued(credTypes.slice(0, 1))
     }
   })
 
   const startCredOffer = async () => {
-    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('offerCred', {
-      types: Array.from(new Set(issuedCredentials)),
-      invalid: Array.from(new Set(invalidCredentials)),
-    })
+    const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
+      RpcRoutes.offerCred,
+      {
+        types: Array.from(new Set(issuedCredentials)),
+        invalid: Array.from(new Set(invalidCredentials)),
+      },
+    )
     console.log(resp)
     return resp
   }
-    //setJwt(resp.jwt)
-    //setIdentifier(resp.id)
-
-    /*
-    const { qrCode, socket, identifier } = await getQrCode(interactionType, {
-      ...(interactionType === InteractionType.Receive && {
-        types: Array.from(new Set(issuedCredentials)),
-        invalid: Array.from(new Set(invalidCredentials)),
-      }),
-      ...(interactionType === InteractionType.Share && {
-        types: Array.from(new Set(requestedCredentials)),
-      }),
-      ...(interactionType === InteractionType.Auth && {
-        desc: description,
-      }),
-    })
-
-    setQr(qrCode)
-    awaitStatus(identifier)
-      .then((obj: any) => {
-        if (obj.status === 'success') setQr('')
-      })
-      .catch(e => setErr(e))
-    */
 
   return (
     <InteractionContainer
@@ -122,9 +95,7 @@ export const CredOfferContainer = (
       <SelectionComponent
         title={'Break Credentials'}
         options={issuedCredentials}
-        onSelect={type =>
-          setInvalid(handleSelect(invalidCredentials, type))
-        }
+        onSelect={type => setInvalid(handleSelect(invalidCredentials, type))}
         selectedItems={invalidCredentials}
       />
     </InteractionContainer>
@@ -134,10 +105,10 @@ export const CredOfferContainer = (
 export const InteractionContainer = ({
   startHandler,
   startText,
-  children
-} : {
-  startHandler: () => Promise<{ qr?: string, jwt?: string, err?: string }>,
-  startText: string,
+  children,
+}: {
+  startHandler: () => Promise<{ qr?: string; jwt?: string; err?: string }>
+  startText: string
   children: React.ReactNode
 }) => {
   const [qr, setQr] = useState<string | undefined>()
@@ -175,38 +146,38 @@ export const InteractionContainer = ({
           padding: '20px',
         }}
       >
-        <InteractionButton
-          onClick={startBtnHandler}
-          text={startText}
-        />
+        <InteractionButton onClick={startBtnHandler} text={startText} />
 
         {err ? (
           <b>Error</b>
         ) : (
-          jwt && (<div>
-            <div style={{
-              wordWrap: 'break-word', maxWidth: '50vw',
-              whiteSpace: 'pre-wrap', fontFamily: 'monospace'
-              }}>
-              {jwt}
+          jwt && (
+            <div>
+              <div
+                style={{
+                  wordWrap: 'break-word',
+                  maxWidth: '50vw',
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: 'monospace',
+                }}
+              >
+                {jwt}
+              </div>
             </div>
-          </div>)
+          )
         )}
 
-        {!err && qr && (
-          <img src={qr} className="c-qrcode" alt="QR Code" />
-        )}
+        {!err && qr && <img src={qr} className="c-qrcode" alt="QR Code" />}
       </div>
     </div>
   )
 }
 
-export const CredShareContainer = (
-{
+export const CredShareContainer = ({
   serviceAPI,
-  credTypes
+  credTypes,
 }: {
-  serviceAPI: JolocomWebServiceClient,
+  serviceAPI: JolocomWebServiceClient
   credTypes: string[]
 }) => {
   const [requestedCredentials, setRequested] = useState<Array<string>>([])
@@ -219,15 +190,22 @@ export const CredShareContainer = (
   }
 
   useEffect(() => {
-    if (requestedCredentials.length === 0 && credTypes && credTypes.length > 0) {
-      setRequested(credTypes.slice(0,1))
+    if (
+      requestedCredentials.length === 0 &&
+      credTypes &&
+      credTypes.length > 0
+    ) {
+      setRequested(credTypes.slice(0, 1))
     }
   })
 
   const startCredRequest = async () => {
-    const resp: { qr: string, err: string } = await serviceAPI.sendRPC('credShareRequest', {
-      types: Array.from(new Set(requestedCredentials)),
-    })
+    const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
+      RpcRoutes.credShareRequest,
+      {
+        types: Array.from(new Set(requestedCredentials)),
+      },
+    )
     console.log(resp)
     return resp
   }
@@ -241,22 +219,12 @@ export const CredShareContainer = (
       <SelectionComponent
         title={'Available Credentials'}
         options={requestableCredTypes}
-        onSelect={type => setRequested(handleSelect(requestedCredentials, type))}
+        onSelect={type =>
+          setRequested(handleSelect(requestedCredentials, type))
+        }
         selectedItems={requestedCredentials}
       />
-      <div style={{ paddingTop: '20px' }}>
-        {/*<h4>Description</h4>
-        <input
-          style={{
-            margin: '10px',
-            width: '100%',
-          }}
-          type="text"
-          name="description"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-        />*/}
-      </div>
+      <div style={{ paddingTop: '20px' }}></div>
     </InteractionContainer>
   )
 }
