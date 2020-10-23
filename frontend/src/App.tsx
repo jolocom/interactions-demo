@@ -8,6 +8,7 @@ import {
 } from './ui/interaction'
 import { EstablishChannelContainer } from './ui/establishChannel'
 import { AuthenticationContainer } from './ui/authenticationContainer'
+import { AuthorizationContainer } from './ui/authorizationContainer'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 const jolocomLogo = require('./images/JO_icon.svg')
 
@@ -57,6 +58,7 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
             credTypes={requestableCredTypes}
           />
           <AuthenticationContainer serviceAPI={serviceAPI} />
+          <AuthorizationContainer serviceAPI={serviceAPI} />
         </article>
       </main>
     </React.Fragment>
