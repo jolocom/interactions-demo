@@ -33,6 +33,9 @@ export const AuthorizationContainer = ({
       startHandler={startAuthz}
     >
       <h2>Authorization</h2>
+      <h4>
+        <i>(Not supported on SmartWallet 1.x)</i>
+      </h4>
       <div style={{ paddingTop: '20px' }}>
         <h4>Description</h4>
         <input
