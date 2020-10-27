@@ -3,6 +3,7 @@ import * as hapi from '@hapi/hapi'
 // @ts-ignore
 import * as HAPIWebSocket from 'hapi-plugin-websocket'
 import { HapiJolocomWebService } from 'hapi-jolocom'
+import { last } from 'ramda'
 
 import { JolocomSDK } from "@jolocom/sdk"
 // @ts-ignore
@@ -12,6 +13,7 @@ import { CredentialRenderTypes, CredentialOffer } from 'jolocom-lib/js/interacti
 
 import { claimsMetadata } from '@jolocom/protocol-ts'
 import { constraintFunctions } from 'jolocom-lib/js/interactionTokens/credentialRequest'
+import { CredentialOfferFlowState } from '@jolocom/sdk/js/interactionManager/types'
 
 const typeorm = require("typeorm")
 
@@ -28,34 +30,49 @@ const typeormConfig = {
   }
 }
 
-const DemoCredTypeConstant = 'DemoCred'
+enum CredTypes {
+  DemoCred = 'DemoCred',
+  DemoIdCard = 'DemoIdCard',
+  DemoDriversLicense = 'DemoDriversLicense',
+}
 
-const demoCredMetadata = {
-  type: ['Credential', DemoCredTypeConstant],
-  name: 'Demonstration Credential',
+const genericMetadata = (type: CredTypes, name: string) => ({
+  type: ['Credential', type],
+  name,
   context: [
     {
       name: 'schema:name',
       description: 'schema:description'
     }
-  ]
-}
+  ],
+})
 
-const demoCredOffer: CredentialOffer = {
-  type: DemoCredTypeConstant, // NOTE: this actually doesn't necessarily need to match
+const genericOffer = (type: CredTypes, color?: string): CredentialOffer => ({
+  type, // NOTE: this actually doesn't necessarily need to match
   requestedInput: {}, // currently not used
   renderInfo: {
     renderAs: CredentialRenderTypes.document,
     background: {
-      color: '#420'
+      color: color ?? '#420'
     }
   }
+})
+
+const credMetadata = {
+  [CredTypes.DemoCred]: genericMetadata(CredTypes.DemoCred, 'Demonstration Credential'),
+  [CredTypes.DemoIdCard]: genericMetadata(CredTypes.DemoIdCard, 'Demonstration ID Card Credential'),
+  [CredTypes.DemoDriversLicense]: genericMetadata(CredTypes.DemoDriversLicense, "Demonstration Driver's License Credential"),
 }
 
-const offeredCredentials =  [demoCredOffer]
+const offeredCredentials =  [
+  genericOffer(CredTypes.DemoCred),
+  genericOffer(CredTypes.DemoIdCard),
+  genericOffer(CredTypes.DemoDriversLicense)
+]
+
 const requestableCredentials = {
   ...claimsMetadata,
-  [DemoCredTypeConstant]: demoCredMetadata,
+  ...credMetadata,
 }
 
 export const generateRequirementsFromConfig = ({
@@ -77,7 +94,7 @@ export const init = async () => {
     storage,
   })
 
-  const publicHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
+  const publicHostport = process.env.SERVICE_HOSTPORT || '192.168.178.36:9000'
   const publicPort = publicHostport.split(':')[1]
   const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000;
 
@@ -123,6 +140,22 @@ export const init = async () => {
           })
         )
       },
+
+      authzInterxn: async (req: {description: string, action: string, imageURL: string}, {createInteractionCallbackURL, wrapJWT}) => {
+        const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+          const interxn = await jolo.processJWT(jwt)
+          console.log('authz request handled for', interxn.counterparty)
+        })
+        return wrapJWT(
+          await jolo.authorizationRequestToken({
+            description: req.description,
+            action: req.action,
+            imageURL: req.imageURL,
+            callbackURL
+          })
+        )
+      },
+
       authnInterxn: async (req: { description: string }, { createInteractionCallbackURL, wrapJWT }) => {
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
@@ -195,20 +228,25 @@ export const init = async () => {
           const interxn = await jolo.processJWT(jwt)
           console.log('offerCred called back for', interxn.id)
 
-          const credentials = await interxn.issueSelectedCredentials({
-            [DemoCredTypeConstant]: async (requestedInput?: any) => {
-              let subject
-              if (invalidTypes.includes(DemoCredTypeConstant)) subject = 'INVALID'
-              return {
-                subject,
+          const state = interxn.getSummary().state as CredentialOfferFlowState
+          const credentials = await interxn.issueSelectedCredentials(state.selectedTypes.reduce((acc, val) => {
+            return {...acc, [val]: (requestedInput?: any) => {
+              const subjectObj: {subject?: string} = {}
+              if (invalidTypes.includes(val)) subjectObj.subject = 'INVALID'
+
+              const offer = {
+                ...subjectObj,
                 claim: {
                   message: 'Demo Credential for ' + interxn.participants.responder!.did,
                 },
-                metadata: demoCredMetadata,
+                metadata: credMetadata[val],
               }
+              console.log({offer})
+              return offer
             }
-          })
-          console.log('credentials issued', credentials)
+            }
+          }, {}))
+          console.log('credentials issued', credentials.map(c => last(c.type)))
           return interxn.createCredentialReceiveToken(credentials)
         })
 

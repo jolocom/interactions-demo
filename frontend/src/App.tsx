@@ -2,22 +2,16 @@ import React, { useState, useEffect } from 'react'
 import './reset.css'
 import './App.css'
 import {
-  InteractionContainer,
   CredOfferContainer,
   PeerResolutionContainer,
-  CredShareContainer
+  CredShareContainer,
 } from './ui/interaction'
 import { EstablishChannelContainer } from './ui/establishChannel'
-import { InteractionType } from './config'
+import { AuthenticationContainer } from './ui/authenticationContainer'
+import { AuthorizationContainer } from './ui/authorizationContainer'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
+import { RpcRoutes } from './config'
 const jolocomLogo = require('./images/JO_icon.svg')
-
-interface State {
-  loading: boolean
-  qrCode: {
-    source: string
-  }
-}
 
 interface AppProps {
   jwtCommand: string
@@ -28,40 +22,46 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
   const [availableCredTypes, setAvailableCredTypes] = useState<string[]>([])
   const [requestableCredTypes, setRequestableCredTypes] = useState<string[]>([])
   useEffect(() => {
-    serviceAPI.sendRPC('getCredentialTypes').then((credTypes: string[]) => {
-      setAvailableCredTypes(credTypes)
-    })
-    serviceAPI.sendRPC('getRequestableCredentialTypes').then((credTypes: string[]) => {
-      setRequestableCredTypes(credTypes)
-    })
+    serviceAPI
+      .sendRPC(RpcRoutes.getCredentialTypes)
+      .then((credTypes: string[]) => {
+        setAvailableCredTypes(credTypes)
+      })
+    serviceAPI
+      .sendRPC(RpcRoutes.getRequestableCredentialTypes)
+      .then((credTypes: string[]) => {
+        setRequestableCredTypes(credTypes)
+      })
   }, [serviceAPI])
 
   return (
     <React.Fragment>
-      <header className="c-header" style={{textAlign: 'center'}}>
-        <h1><img src={jolocomLogo} alt="Jolocom Logo" />&nbsp;Jolocom</h1>
+      <header className="c-header" style={{ textAlign: 'center' }}>
+        <h1>
+          <img src={jolocomLogo} alt="Jolocom Logo" />
+          &nbsp;Jolocom
+        </h1>
         <h1>Interactions Demo</h1>
       </header>
       <main className="main">
         <article className="c-qrcode-container">
-          <PeerResolutionContainer
+          <PeerResolutionContainer serviceAPI={serviceAPI} />
+          <EstablishChannelContainer
             serviceAPI={serviceAPI}
+            jwtCommand={jwtCommand}
           />
-          <EstablishChannelContainer serviceAPI={serviceAPI} jwtCommand={jwtCommand} />
 
           <CredOfferContainer
             serviceAPI={serviceAPI}
-            credTypes={availableCredTypes} />
+            credTypes={availableCredTypes}
+          />
 
           <CredShareContainer
             serviceAPI={serviceAPI}
             credTypes={requestableCredTypes}
           />
-          {/*
-          <InteractionContainer interactionType={InteractionType.Receive} />
-          <InteractionContainer interactionType={InteractionType.Share} />
-          <InteractionContainer interactionType={InteractionType.Auth} />
-          */}
+          <AuthenticationContainer serviceAPI={serviceAPI} />
+          <AuthorizationContainer serviceAPI={serviceAPI} />
         </article>
       </main>
     </React.Fragment>
