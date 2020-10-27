@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { RpcRoutes } from '../config'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionButton } from './interactionButton'
 import { InteractionContainer } from './interaction'
 
 export const AuthenticationContainer = ({
