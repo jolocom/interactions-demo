@@ -45,7 +45,6 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
       </header>
       <main className="main">
         <article className="c-qrcode-container">
-          <PeerResolutionContainer serviceAPI={serviceAPI} />
           <EstablishChannelContainer
             serviceAPI={serviceAPI}
             jwtCommand={jwtCommand}
