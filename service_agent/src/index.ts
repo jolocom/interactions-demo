@@ -21,7 +21,7 @@ const typeormConfig = {
   type: 'sqlite',
   database: __dirname + '/../db.sqlite3',
   logging: ['error', 'warn', 'schema'],
-  entities: [ ...require('@jolocom/sdk-storage-typeorm').entityList ],
+  entities: [...require('@jolocom/sdk-storage-typeorm').entityList],
   migrations: [__dirname + '/../migrations/*.ts'],
   migrationsRun: true,
   synchronize: true,
@@ -64,7 +64,7 @@ const credMetadata = {
   [CredTypes.DemoDriversLicense]: genericMetadata(CredTypes.DemoDriversLicense, "Demonstration Driver's License Credential"),
 }
 
-const offeredCredentials =  [
+const offeredCredentials = [
   genericOffer(CredTypes.DemoCred),
   genericOffer(CredTypes.DemoIdCard),
   genericOffer(CredTypes.DemoDriversLicense)
@@ -86,7 +86,7 @@ export const generateRequirementsFromConfig = ({
 })
 
 export const init = async () => {
-  const passwordStore = new FilePasswordStore(__dirname+'/../password.txt')
+  const passwordStore = new FilePasswordStore(__dirname + '/../password.txt')
   const connection = await typeorm.createConnection(typeormConfig)
   const storage = new JolocomTypeormStorage(connection)
 
@@ -141,7 +141,7 @@ export const init = async () => {
         )
       },
 
-      authzInterxn: async (req: {description: string, action: string, imageURL: string}, {createInteractionCallbackURL, wrapJWT}) => {
+      authzInterxn: async (req: { description: string, action: string, imageURL: string }, { createInteractionCallbackURL, wrapJWT }) => {
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
           console.log('authz request handled for', interxn.counterparty)
@@ -159,7 +159,7 @@ export const init = async () => {
       authnInterxn: async (req: { description: string }, { createInteractionCallbackURL, wrapJWT }) => {
         const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
           const interxn = await jolo.processJWT(jwt)
-          console.log('auth request handled for', interxn.counterparty)
+          console.log('auth request handled for', interxn.participants)
         })
         return wrapJWT(
           await jolo.authRequestToken({
@@ -230,20 +230,22 @@ export const init = async () => {
 
           const state = interxn.getSummary().state as CredentialOfferFlowState
           const credentials = await interxn.issueSelectedCredentials(state.selectedTypes.reduce((acc, val) => {
-            return {...acc, [val]: (requestedInput?: any) => {
-              const subjectObj: {subject?: string} = {}
-              if (invalidTypes.includes(val)) subjectObj.subject = 'INVALID'
+            return {
+              ...acc, [val]: (requestedInput?: any) => {
+                const subjectObj: { subject?: string } = {}
+                if (invalidTypes.includes(val)) subjectObj.subject = 'INVALID'
+                else subjectObj.subject = interxn.participants.responder.did
 
-              const offer = {
-                ...subjectObj,
-                claim: {
-                  message: 'Demo Credential for ' + interxn.participants.responder!.did,
-                },
-                metadata: credMetadata[val],
+                const offer = {
+                  ...subjectObj,
+                  claim: {
+                    message: 'Demo Credential for ' + interxn.participants.responder!.did,
+                  },
+                  metadata: credMetadata[val],
+                }
+                console.log({ offer })
+                return offer
               }
-              console.log({offer})
-              return offer
-            }
             }
           }, {}))
           console.log('credentials issued', credentials.map(c => last(c.type)))
