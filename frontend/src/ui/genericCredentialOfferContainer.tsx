@@ -41,6 +41,12 @@ const documentTypes = [
   CredentialTypes.ProofOfIdCredentialDemo,
 ]
 
+const renderAsForType = {
+  [CredentialTypes.ProofOfDriverLicenceDemo]: 'document',
+  [CredentialTypes.ProofOfIdCredentialDemo]: 'document',
+  [CredentialTypes.ProofOfTicketDemo]: 'ticket',
+}
+
 const documentInputs = [
   {
     name: 'givenName',
@@ -73,7 +79,6 @@ export const GenericCredentialOfferContainer = ({
     CredentialTypes.ProofOfIdCredentialDemo,
   )
   const [newField, setNewField] = useState('')
-  const [renderAs, setRenderAs] = useState('document')
 
   const [inputs, setInputs] = useState<
     Array<{
@@ -142,7 +147,7 @@ export const GenericCredentialOfferContainer = ({
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
       RpcRoutes.genericCredentialOffer,
       {
-        renderAs,
+        renderAs: renderAsForType[credType],
         name: credName,
         type: credType,
         claims: inputs.reduce(
@@ -154,7 +159,6 @@ export const GenericCredentialOfferContainer = ({
         ),
       },
     )
-    console.log(JSON.stringify(resp, null, 2))
 
     return resp
   }
