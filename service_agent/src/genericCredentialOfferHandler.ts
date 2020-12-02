@@ -48,8 +48,8 @@ const getBase64FromUrl = (url: string) => {
       "User-Agent": "my-app"
     }
   }
- 
-  return encode(url, options) as Promise<string>
+  const encoded = await encode(url, options) as Promise<string>
+  return `data:image/jpg;base64,${encoded}`
 }
 
 export const genericCredentialOfferHandler = (
