@@ -11,6 +11,7 @@ import { AuthenticationContainer } from './ui/authenticationContainer'
 import { AuthorizationContainer } from './ui/authorizationContainer'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import { RpcRoutes } from './config'
+import { GenericCredentialOfferContainer } from './ui/genericCredentialOfferContainer'
 const jolocomLogo = require('./images/JO_icon.svg')
 
 interface AppProps {
@@ -61,6 +62,7 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
           />
           <AuthenticationContainer serviceAPI={serviceAPI} />
           <AuthorizationContainer serviceAPI={serviceAPI} />
+          <GenericCredentialOfferContainer serviceAPI={serviceAPI} />
         </article>
       </main>
     </React.Fragment>
