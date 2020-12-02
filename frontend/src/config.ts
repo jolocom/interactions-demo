@@ -22,6 +22,7 @@ export enum RpcRoutes {
   offerCred = 'offerCred',
   getRequestableCredentialTypes = 'getRequestableCredentialTypes',
   credShareRequest = 'credShareRequest',
+  genericCredentialOffer = 'genericCredentialOffer',
 }
 
 export const joloColor = 'rgb(148, 47, 81)'
