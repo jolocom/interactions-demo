@@ -28,6 +28,7 @@
     "hapi-jolocom": "^2.0.0-rc4",
     "hapi-plugin-websocket": "^2.3.0",
     "jolocom-lib": "^5.1.0-rc12",
+    "node-base64-image": "^2.0.1",
     "sqlite3": "^4.2.0",
     "typeorm": "^0.2.24"
   }
