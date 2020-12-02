@@ -30,19 +30,6 @@ const generateString = () =>
 const lowercaseFirst = (val: string) =>
   val.charAt(0).toLowerCase() + val.slice(1)
 
-const getBase64FromUrl = async (url: string): Promise<ArrayBuffer> => {
-  const data = await fetch(url)
-  const blob = await data.blob()
-  return new Promise(resolve => {
-    const reader = new FileReader()
-    reader.readAsDataURL(blob)
-    reader.onloadend = function() {
-      const base64data = reader.result as ArrayBuffer
-      resolve(base64data)
-    }
-  })
-}
-
 enum CredentialTypes {
   ProofOfIdCredentialDemo = 'ProofOfIdCredentialDemo',
   ProofOfDriverLicenceDemo = 'ProofOfDriverLicenceDemo',
@@ -152,17 +139,6 @@ export const GenericCredentialOfferContainer = ({
   }
 
   const handleSubmit = async () => {
-    const imgInputIdx = inputs.findIndex(v => v.name === 'photo')
-    if (imgInputIdx) {
-      const imgInput = inputs[imgInputIdx]
-      const img = await getBase64FromUrl(imgInput.value)
-      console.log({ img })
-      inputs[imgInputIdx] = {
-        ...imgInput,
-        //value: img.
-      }
-    }
-
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
       RpcRoutes.genericCredentialOffer,
       {
