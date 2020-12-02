@@ -2,7 +2,7 @@ import { Agent } from '@jolocom/sdk'
 import { CredentialOfferFlowState } from '@jolocom/sdk/js/interactionManager/types'
 import { CredentialOffer } from 'jolocom-lib/js/interactionTokens/types'
 import { RPCRequest } from './types'
-import {encode} from 'node-base64-image'
+import { encode } from 'node-base64-image'
 
 type Claims = Record<string, string>
 
@@ -41,14 +41,14 @@ const generateCredentialOffer = (
   },
 })
 
-const getBase64FromUrl = (url: string) => {
+const getBase64FromUrl = async (url: string) => {
   const options = {
     string: true,
     headers: {
-      "User-Agent": "my-app"
-    }
+      'User-Agent': 'my-app',
+    },
   }
-  const encoded = await encode(url, options) as Promise<string>
+  const encoded = (await encode(url, options)) as string
   return `data:image/jpg;base64,${encoded}`
 }
 
@@ -64,7 +64,7 @@ export const genericCredentialOfferHandler = (
     const interaction = await agent.processJWT(jwt)
 
     // NOTE: encoding the photo property if it's available
-    if(claims['photo']) {
+    if (claims['photo']) {
       claims['photo'] = await getBase64FromUrl(claims['photo'])
     }
 
