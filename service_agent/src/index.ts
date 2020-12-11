@@ -58,7 +58,7 @@ const genericOffer = (type: CredTypes, color?: string): CredentialOffer => ({
   renderInfo: {
     renderAs: CredentialRenderTypes.document,
     background: {
-      color: color ?? '#420',
+      color: color ?? '#a599d8',
     },
   },
 })
