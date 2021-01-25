@@ -60,7 +60,14 @@ export const genericCredentialOfferHandler = (
 ) => {
   const { name, type, claims, renderAs } = req
 
-  const callbackURL = createInteractionCallbackURL(async (jwt: string) => {
+  return wrapJWT(
+    await agent.credOfferToken({
+      callbackURL: createInteractionCallbackURL(handleCredentialOfferResponse),
+      offeredCredentials: [generateCredentialOffer(type, renderAs)],
+    }),
+  )
+
+  async function handleCredentialOfferResponse(jwt: string) {
     const interaction = await agent.processJWT(jwt)
 
     // NOTE: encoding the photo property if it's available
@@ -82,12 +89,5 @@ export const genericCredentialOfferHandler = (
     )
 
     return interaction.createCredentialReceiveToken(credentials)
-  })
-
-  return wrapJWT(
-    await agent.credOfferToken({
-      callbackURL,
-      offeredCredentials: [generateCredentialOffer(type, renderAs)],
-    }),
-  )
+  }
 }
