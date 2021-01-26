@@ -835,10 +835,10 @@
   dependencies:
     ethers "5.0.5"
 
-"@jolocom/sdk-password-store-filesystem@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@jolocom/sdk-password-store-filesystem/-/sdk-password-store-filesystem-0.1.0.tgz#4b9053ef57aa63db1a548a060a7f93a7a2b2b79c"
-  integrity sha512-j8sKmOUKQvUQMqFzMm9Yv5oqiJuikm7GaHU4gMa2mVPQcpoX7oGP7Sfgt2PkYK+Z8myRtqU5qb8Y6OKOJBvFug==
+"@jolocom/sdk-password-store-filesystem@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@jolocom/sdk-password-store-filesystem/-/sdk-password-store-filesystem-0.2.2.tgz#2042b660ec96bf7685e0bf71632338d5208fd666"
+  integrity sha512-A8sq/ilIkmLakI6+bN2/Txy0vvLLrLkEl7IT6jRRCpsn6ZqicU2/DgyXuSZ8UF2jmfe3ube1onACNaVI0TUXkA==
 
 "@jolocom/sdk-storage-typeorm@^4.1.0":
   version "4.1.0"

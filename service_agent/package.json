@@ -20,7 +20,7 @@
     "@hapi/hapi": "18",
     "@hapi/inert": "^6.0.1",
     "@jolocom/sdk": "^1.0.1",
-    "@jolocom/sdk-password-store-filesystem": "^0.1.0",
+    "@jolocom/sdk-password-store-filesystem": "^0.2.2",
     "@jolocom/sdk-storage-typeorm": "^4.1.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.9.0",
