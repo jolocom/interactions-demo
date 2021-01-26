@@ -840,18 +840,18 @@
   resolved "https://registry.yarnpkg.com/@jolocom/sdk-password-store-filesystem/-/sdk-password-store-filesystem-0.1.0.tgz#4b9053ef57aa63db1a548a060a7f93a7a2b2b79c"
   integrity sha512-j8sKmOUKQvUQMqFzMm9Yv5oqiJuikm7GaHU4gMa2mVPQcpoX7oGP7Sfgt2PkYK+Z8myRtqU5qb8Y6OKOJBvFug==
 
-"@jolocom/sdk-storage-typeorm@4.0.0-rc2":
-  version "4.0.0-rc2"
-  resolved "https://registry.yarnpkg.com/@jolocom/sdk-storage-typeorm/-/sdk-storage-typeorm-4.0.0-rc2.tgz#cbcb8823f0fa1b5b12186ac78ba1215e69862bad"
-  integrity sha512-THwS7/WF5U+2vgoW400NtzbLfIHLdDrA0r8s7DkfZ6eKcl7oAnzJ4T/RpjR43bpJufjbrXOxPd0irrdEwOdy4A==
+"@jolocom/sdk-storage-typeorm@^4.1.0":
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/@jolocom/sdk-storage-typeorm/-/sdk-storage-typeorm-4.1.0.tgz#008ddad8756e39cdd37b9c6c6ecea9fa9fee0a38"
+  integrity sha512-OxyGGk6D5DxSoAWmaNZSvGyyEkuLnbxLTnILuVJPbq1WGxUjKaqIoI/U6bfyIy+2DcL0mZflClkGaiQoIENkbA==
   dependencies:
     class-transformer "^0.3.1"
     ramda "^0.27.1"
 
-"@jolocom/sdk@^1.0.0-rc16":
-  version "1.0.0-rc16"
-  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-1.0.0-rc16.tgz#67db9de9a450ddcb7feaec88824671c18ae62ef2"
-  integrity sha512-7sT5ouqEalo/S7dCOK+KuEhV9+YTKMJd7qFtjU+lS2YHGc7M1k3qXllfR2SMBJMu7j1MkopZvAFi812aZE3rkQ==
+"@jolocom/sdk@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@jolocom/sdk/-/sdk-1.0.1.tgz#7698691f3f18c490363c9f5694832c021bf1f8d1"
+  integrity sha512-71rtwrAGYZ4nJ0eDXQIZjq7orgeNkIfSAGigY2IR8A0BPl9pqsIsjy5lEOMETuGi1+nKo04alqjqyNTfEyT0hQ==
   dependencies:
     "@jolocom/protocol-ts" "^0.5.2"
     form-data "^3.0.0"
