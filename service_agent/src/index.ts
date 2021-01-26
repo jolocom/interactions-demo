@@ -113,9 +113,6 @@ export const init = async () => {
   const publicPort = publicHostport.split(':')[1]
   const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000
 
-  const jolo = await sdk.initAgent({ passwordStore: passwordStore })
-  const idw = jolo.identityWallet
-
   const server = new hapi.Server({
     port: listenPort,
     debug: {
@@ -125,7 +122,12 @@ export const init = async () => {
   })
   await server.register(HAPIWebSocket)
 
-  console.log('Agent ready,', idw.didDocument)
+  server.log(['info'], `Jolocom SDK with default DIDMethod did:${sdk.didMethods.getDefault().prefix}`)
+  server.log(['info'], `Initializing Agent...`)
+  const jolo = await sdk.initAgent({ passwordStore: passwordStore })
+
+
+  server.log(['info'], `Agent ready with DID ${jolo.idw.did}`)
 
   /**
    * Using the "HapiJolocomWebService"
