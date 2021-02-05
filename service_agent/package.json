@@ -19,7 +19,7 @@
   "dependencies": {
     "@hapi/hapi": "18",
     "@hapi/inert": "^6.0.1",
-    "@jolocom/sdk": "^1.0.1",
+    "@jolocom/sdk": "^1.1.0-rc4",
     "@jolocom/sdk-password-store-filesystem": "^0.2.2",
     "@jolocom/sdk-storage-typeorm": "^4.1.0",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
@@ -27,7 +27,7 @@
     "eslint": "^7.14.0",
     "hapi-jolocom": "^2.0.0-rc4",
     "hapi-plugin-websocket": "^2.3.0",
-    "jolocom-lib": "^5.1.0-rc12",
+    "jolocom-lib": "^5.2.0-rc0",
     "node-base64-image": "^2.0.1",
     "sqlite3": "^4.2.0",
     "typeorm": "^0.2.24"

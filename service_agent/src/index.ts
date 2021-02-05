@@ -12,7 +12,7 @@ import { JolocomTypeormStorage } from '@jolocom/sdk-storage-typeorm'
 import {
   CredentialRenderTypes,
   CredentialOffer,
-} from 'jolocom-lib/js/interactionTokens/interactionTokens.types'
+} from '@jolocom/protocol-ts'
 
 import { claimsMetadata } from '@jolocom/protocol-ts'
 import { constraintFunctions } from 'jolocom-lib/js/interactionTokens/credentialRequest'
