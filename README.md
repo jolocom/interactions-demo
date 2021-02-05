@@ -1,22 +1,40 @@
-# Docker Jolocom RPC Demo
+# Docker Jolocom Interactions Demo
 
-## Usage Instructions
+## Development Instructions
 
-Clone the repository locally then in one terminal:
+NOTE: the docker-compose.yml provided is not suitable for development.
+
+### Service Agent (Backend)
+This requires an LTS version of Node: 10 or 12 or 14
+
 ```sh
-docker-compose up
+cd service_agent
+yarn install
+yarn start
 ```
 
-Wait for the servers to spin up (see terminal output)
-
-Then visit the frontend development server at http://localhost:3000 
+### React App (Frontend)
+```sh
+cd frontend
+yarn install
+yarn start
+```
+Visit the frontend development server at http://localhost:3000
 and open the Web Console to see debugging output
 
-Click 'Start RPC Demo' to create a new RPC session. The frontend will provide a
-`docker-compose` command to run the `rpc_agent`. It will look something like
+## Deployment instructions
+The repo comes with a [docker-compose.yml](./docker-compose.yml) that is
+suitable for deployment accompanied by https://github.com/jolocom/docker-nginx-proxy
+which automatically adds HTTPS support by issuing SSL certificates through
+letsencrypt.org
 
-```sh
-docker-compose run rpc_agent start eyiusdbfisudfbksdjbs...sdfjkhsdjkfshk
+The configuration for the domain is taken from environment variables in
+`docker-compose.yml`
+```
+    LETSENCRYPT_HOST: 'interxns.jolocom.io'
+    LETSENCRYPT_EMAIL: 'dev@jolocom.io'
+    SERVICE_HOSTPORT: 'interxns.jolocom.io'
+    VIRTUAL_HOST: 'interxns.jolocom.io'
 ```
 
 ### Usage with the SmartWallet

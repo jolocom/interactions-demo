@@ -7,7 +7,8 @@
   "private": false,
   "scripts": {
     "debug": "DEBUG=1 nodemon",
-    "start": "nodemon"
+    "start": "nodemon",
+    "server": "ts-node ./src/index.ts"
   },
   "devDependencies": {
     "@types/ws": "^7.2.4",
