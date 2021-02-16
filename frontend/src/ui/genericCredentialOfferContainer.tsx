@@ -50,18 +50,21 @@ const renderAsForType = {
 const documentInputs = [
   {
     name: 'givenName',
+    label: 'Given Name',
     value: '',
     fieldName: 'givenName',
     placeholder: '(mandatory)',
   },
   {
     name: 'familyName',
+    label: 'Family Name',
     value: '',
     fieldName: 'familyName',
     placeholder: '(mandatory)',
   },
   {
     name: 'photo',
+    label: 'Photograph',
     value:
       'https://i.pinimg.com/564x/64/4d/dc/644ddca56c43e4b01af5aec27e010feb.jpg',
     fieldName: 'photo',
@@ -79,28 +82,33 @@ export const GenericCredentialOfferContainer = ({
     CredentialTypes.ProofOfIdCredentialDemo,
   )
   const [newField, setNewField] = useState('')
+  const [newFieldLabel, setNewFieldLabel] = useState('')
 
   const [inputs, setInputs] = useState<
     Array<{
       name: string
       fieldName: string
+      label: string
       value: string
     }>
   >(documentTypes.includes(credType) ? [...documentInputs] : [])
 
   const handleCreateNewField = () => {
     if (newField.length) {
-      setNewField('')
+      const newFieldName = lowercaseFirst(newField.replace(' ',''))
       setInputs(prev => {
         return [
           ...prev,
           {
             name: generateString(),
             value: '',
-            fieldName: newField,
+            label: newFieldLabel,
+            fieldName: newFieldName,
           },
         ]
       })
+      setNewField('')
+      setNewFieldLabel('')
     }
   }
 
@@ -144,19 +152,25 @@ export const GenericCredentialOfferContainer = ({
   }
 
   const handleSubmit = async () => {
+    const claims: Record<string, string> = {}
+    const display = {
+      properties: inputs.map(inp => {
+        claims[inp.fieldName] = inp.value
+        return {
+          path: [`$.${inp.fieldName}`],
+          label: inp.label
+        }
+      })
+    }
+
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
       RpcRoutes.genericCredentialOffer,
       {
         renderAs: renderAsForType[credType],
         name: credName,
         type: credType,
-        claims: inputs.reduce(
-          (acc, v) => ({
-            ...acc,
-            [lowercaseFirst(v.fieldName.split(' ').join(''))]: v.value,
-          }),
-          {},
-        ),
+        claims,
+        display
       },
     )
 
@@ -194,7 +208,7 @@ export const GenericCredentialOfferContainer = ({
       </div>
       <div style={{ paddingBottom: '30px' }}>
         <h3>Claims</h3>
-        {inputs.map(({ fieldName, ...rest }) => (
+        {inputs.map(({ fieldName, label, ...rest }) => (
           <div
             style={{
               paddingTop: '20px',
@@ -226,6 +240,7 @@ export const GenericCredentialOfferContainer = ({
                 </button>
               )}
             </div>
+            <TextInput {...rest} placeholder="label" value={label} onChange={handleInputChange} />
             <TextInput {...rest} onChange={handleInputChange} />
           </div>
         ))}
@@ -242,6 +257,12 @@ export const GenericCredentialOfferContainer = ({
           value={newField}
           onChange={e => setNewField(e.target.value)}
           placeholder="e.g. birthDate"
+        />
+        <TextInput
+          name="newFieldLabel"
+          value={newFieldLabel}
+          onChange={e => setNewFieldLabel(e.target.value)}
+          placeholder="e.g. Date of Birth"
         />
         <button
           style={{
