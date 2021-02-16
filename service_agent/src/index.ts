@@ -52,16 +52,22 @@ const genericMetadata = (type: CredTypes, name: string) => ({
   ],
 })
 
-const genericOffer = (type: CredTypes, color?: string): CredentialOffer => ({
-  type, // NOTE: this actually doesn't necessarily need to match
-  requestedInput: {}, // currently not used
-  renderInfo: {
-    renderAs: CredentialRenderTypes.document,
-    background: {
-      color: color ?? '#a599d8',
+const genericOffer = (type: CredTypes, color?: string): CredentialOffer => {
+  const meta = credMetadata[type]
+  return {
+    type, // NOTE: this actually doesn't necessarily need to match
+    requestedInput: {}, // currently not used
+    renderInfo: {
+      renderAs: CredentialRenderTypes.document,
+      background: {
+        color: color ?? '#a599d8',
+      },
     },
-  },
-})
+    credential: {
+      schema: 'https://schema.org/EducationalOccupationalCredential',
+    }
+  }
+}
 
 const credMetadata = {
   [CredTypes.DemoCred]: genericMetadata(
@@ -109,7 +115,7 @@ export const init = async () => {
     storage,
   })
 
-  const publicHostport = process.env.SERVICE_HOSTPORT || '192.168.178.36:9000'
+  const publicHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
   const publicPort = publicHostport.split(':')[1]
   const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000
 
@@ -345,6 +351,7 @@ export const init = async () => {
           }),
         )
       },
+
       genericCredentialOffer: genericCredentialOfferHandler(jolo),
     },
   })

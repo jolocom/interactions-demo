@@ -3,19 +3,22 @@ import { CredentialOfferFlowState } from '@jolocom/sdk/js/interactionManager/typ
 import { CredentialOffer } from 'jolocom-lib/js/interactionTokens/types'
 import { RPCRequest } from './types'
 import { encode } from 'node-base64-image'
+import { CredentialDefinition } from '@jolocom/protocol-ts'
 
 type Claims = Record<string, string>
 
 interface OfferRequestParameters {
   name: string
   type: string
+  schema: string
   claims: Claims
   renderAs: string
+  display: CredentialDefinition['display']
 }
 
 const generateMetadata = (type: string, name: string, claims: Claims) => {
   return {
-    type: ['Credential', type],
+    type: ['VerifiableCredential', type],
     name,
     context: [
       {
@@ -29,16 +32,24 @@ const generateMetadata = (type: string, name: string, claims: Claims) => {
   }
 }
 
-const generateCredentialOffer = (
-  type: string,
-  renderAs: string,
-): CredentialOffer => ({
+const generateCredentialOffer = ({
+  name,
   type,
-  requestedInput: {},
+  schema,
+  claims,
+  renderAs,
+  display
+}: OfferRequestParameters): CredentialOffer => ({
+  type,
   renderInfo: {
     // @ts-ignore
     renderAs,
   },
+  credential: {
+    name, //: `${type} Credential`,
+    schema,
+    display
+  }
 })
 
 const getBase64FromUrl = async (url: string) => {
@@ -59,11 +70,12 @@ export const genericCredentialOfferHandler = (
   { createInteractionCallbackURL, wrapJWT },
 ) => {
   const { name, type, claims, renderAs } = req
+  if (!type) throw new Error('type is required')
 
   return wrapJWT(
     await agent.credOfferToken({
       callbackURL: createInteractionCallbackURL(handleCredentialOfferResponse),
-      offeredCredentials: [generateCredentialOffer(type, renderAs)],
+      offeredCredentials: [generateCredentialOffer(req)],
     }),
   )
 
