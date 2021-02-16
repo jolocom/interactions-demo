@@ -8,14 +8,22 @@
   "scripts": {
     "debug": "DEBUG=1 nodemon",
     "start": "nodemon",
-    "server": "ts-node ./src/index.ts"
+    "server": "ts-node ./src/index.ts",
+    "test": "jest",
+    "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --runInBand"
   },
   "devDependencies": {
+    "@jolocom/web-service-client": "^1.0.0",
+    "@types/jest": "^26.0.20",
     "@types/ws": "^7.2.4",
+    "jest": "^26.6.3",
+    "jest-extended": "^0.11.5",
+    "node-fetch": "^2.6.1",
     "nodemon": "^2.0.4",
+    "ts-jest": "^26.5.1",
     "ts-node": "^8.10.2",
-    "tslib": "^2.0.1",
-    "typescript": "^3.8.3"
+    "tslib": "^2.1.0",
+    "typescript": "^4.1.5"
   },
   "dependencies": {
     "@hapi/hapi": "18",
@@ -30,7 +38,7 @@
     "hapi-plugin-websocket": "^2.3.0",
     "jolocom-lib": "^5.2.0-rc0",
     "node-base64-image": "^2.0.1",
-    "sqlite3": "^4.2.0",
+    "sqlite3": "^4",
     "typeorm": "^0.2.24"
   }
 }
