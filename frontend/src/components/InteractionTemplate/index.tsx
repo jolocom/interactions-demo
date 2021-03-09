@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import styles from './InteractionTemplate.module.css'
-import { InteractionButton } from '../../ui/interactionButton'
+import { InteractionBtn } from '../InteractionBtn'
 
 interface IInteractionTemplateProps {
   startHandler: () => Promise<{ qr?: string; jwt?: string; err?: string }>
@@ -28,7 +28,7 @@ export const InteractionTemplate: React.FC<IInteractionTemplateProps> = ({
     <div className={styles['container']}>
       {children}
       <div className={styles['btn-container']}>
-        <InteractionButton onClick={startBtnHandler} text={startText} />
+        <InteractionBtn onClick={startBtnHandler} text={startText} />
         {err && <b>Error</b>}
         {jwt && <p className={styles['jwt']}>{jwt}</p>}
 

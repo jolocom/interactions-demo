@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionButton } from './interactionButton'
 import { RpcRoutes } from '../config'
+import { InteractionBtn } from '../components/InteractionBtn'
 
 export const EstablishChannelContainer = ({
   serviceAPI,
@@ -102,17 +102,17 @@ export const EstablishChannelContainer = ({
                 onChange={e => setEncryptInput(e.target.value)}
               />
             </div>
-            <InteractionButton
+            <InteractionBtn
               onClick={onClickEncrypt}
               text={'Request Encryption'}
             />
-            <InteractionButton
+            <InteractionBtn
               onClick={onClickDecrypt}
               text={'Request Decryption'}
             />
           </>
         ) : (
-          <InteractionButton onClick={onClickStart} text={'Start RPC Demo'} />
+          <InteractionBtn onClick={onClickStart} text={'Start RPC Demo'} />
         )}
 
         {err ? (
