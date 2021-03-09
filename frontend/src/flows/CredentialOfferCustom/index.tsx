@@ -9,6 +9,23 @@ import { CredentialTypes } from './types'
 import { Space } from '../../components/Space'
 import { InteractionInput } from '../../components/InteractionInput'
 import { ClaimInput } from './ClaimInput'
+import { InteractionBtn } from '../../components/InteractionBtn'
+
+interface ICardProps {
+  name: string
+  properties: Array<Record<string, any>>
+}
+const Card: React.FC<ICardProps> = ({ name, properties }) => {
+  return (
+    <div className={styles['card-container']}>
+      <h3>{name}</h3>
+      {properties.length ? <b>Properties:</b> : null}
+      {properties.map(p => (
+        <p key={p.label}>{p.label}</p>
+      ))}
+    </div>
+  )
+}
 
 const TextInput: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -41,6 +58,8 @@ export const CredentialOfferCustom = ({
   const [newField, setNewField] = useState('')
   const [newFieldLabel, setNewFieldLabel] = useState('')
 
+  const defaultInputs = documentTypes.includes(credType) ? documentInputs : []
+
   const [inputs, setInputs] = useState<
     Array<{
       name: string
@@ -48,7 +67,11 @@ export const CredentialOfferCustom = ({
       label: string
       value: string
     }>
-  >(documentTypes.includes(credType) ? [...documentInputs] : [])
+  >(defaultInputs)
+
+  const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
+    Array<Record<string, any>>
+  >([])
 
   const handleCreateNewField = () => {
     if (newField.length) {
@@ -108,7 +131,7 @@ export const CredentialOfferCustom = ({
     setCredType(selected)
   }
 
-  const handleSubmit = async () => {
+  const handleAddIssuedCredential = () => {
     const claims: Record<string, string> = {}
     const display = {
       properties: inputs.map(inp => {
@@ -119,20 +142,27 @@ export const CredentialOfferCustom = ({
         }
       }),
     }
+    const offerRequestDetails = {
+      renderAs: renderAsForType[credType],
+      name: credName,
+      type: credType,
+      claims,
+      display,
+    }
+    setCredentialsToBeIssued(prevState => [...prevState, offerRequestDetails])
+    // setInputs(defaultInputs)
+  }
 
+  const handleSubmit = async () => {
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
       RpcRoutes.genericCredentialOffer,
-      {
-        renderAs: renderAsForType[credType],
-        name: credName,
-        type: credType,
-        claims,
-        display,
-      },
+      credentialsToBeIssued,
     )
 
     return resp
   }
+
+  console.log({ credentialsToBeIssued })
 
   return (
     <InteractionTemplate
@@ -144,75 +174,93 @@ export const CredentialOfferCustom = ({
         <i>(For UI testing)</i>
       </h4>
       <Space />
-      <div>
-        <h3>Credential type</h3>
-        <Space />
-        <select onChange={handleTypeChange}>
-          {Object.values(CredentialTypes).map(type => (
-            <option value={type}>{type}</option>
-          ))}
-        </select>
-        <Space />
-      </div>
-      <InteractionInput
-        label="Credential name"
-        value={credName}
-        setValue={setCredName}
-      />
-      <h3>Claims</h3>
-      {inputs.map(({ fieldName, label, ...rest }) => (
-        <div
-          style={{
-            paddingTop: '20px',
-            paddingLeft: '50px',
-            paddingRight: '50px',
-          }}
-        >
-          <div
-            style={{
-              width: '100%',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            <h4>{fieldName}</h4>
-            {documentInputs.map(v => v.name).includes(rest.name) && (
-              <button
-                onClick={() => handleRemove(rest.name)}
-                className={styles['close-btn']}
-              >
-                x
-              </button>
-            )}
+      <div className={styles['body-container']}>
+        <div className={styles['onboarding-container']}>
+          <div>
+            <h3>Credential type</h3>
+            <Space />
+            <select onChange={handleTypeChange}>
+              {Object.values(CredentialTypes).map(type => (
+                <option value={type}>{type}</option>
+              ))}
+            </select>
+            <Space />
           </div>
-          <TextInput
-            {...rest}
-            placeholder="label"
-            value={label}
-            onChange={handleInputChange}
+          <InteractionInput
+            label="Credential name"
+            value={credName}
+            setValue={setCredName}
           />
-          <TextInput {...rest} onChange={handleInputChange} />
+          <h3>Claims</h3>
+          {inputs.map(({ fieldName, label, ...rest }) => (
+            <div
+              style={{
+                paddingTop: '20px',
+                paddingLeft: '50px',
+                paddingRight: '50px',
+              }}
+            >
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <h4>{fieldName}</h4>
+                {documentInputs.map(v => v.name).includes(rest.name) && (
+                  <button
+                    onClick={() => handleRemove(rest.name)}
+                    className={styles['close-btn']}
+                  >
+                    x
+                  </button>
+                )}
+              </div>
+              <TextInput
+                {...rest}
+                placeholder="label"
+                value={label}
+                onChange={handleInputChange}
+              />
+              <TextInput {...rest} onChange={handleInputChange} />
+            </div>
+          ))}
+          <Space />
+          <div className={styles['field-section']}>
+            <ClaimInput
+              label="New claim"
+              claimKey={newField}
+              claimLabel={newFieldLabel}
+              keyPlaceholder="e.g. birthDate"
+              labelPlaceholder="e.g. Date of Birth"
+              setClaimKey={setNewField}
+              setClaimLabel={setNewFieldLabel}
+            />
+            <button
+              className={styles['plus-btn']}
+              disabled={!newField.length}
+              onClick={handleCreateNewField}
+            >
+              +
+            </button>
+          </div>
+          <InteractionBtn
+            text="Add to issue"
+            onClick={handleAddIssuedCredential}
+          />
         </div>
-      ))}
-      <Space />
-      <div className={styles['field-section']}>
-        <ClaimInput
-          label="New claim"
-          claimKey={newField}
-          claimLabel={newFieldLabel}
-          keyPlaceholder="e.g. birthDate"
-          labelPlaceholder="e.g. Date of Birth"
-          setClaimKey={setNewField}
-          setClaimLabel={setNewFieldLabel}
-        />
-        <button
-          className={styles['plus-btn']}
-          disabled={!newField.length}
-          onClick={handleCreateNewField}
-        >
-          +
-        </button>
+        <div className={styles['credentials-container']}>
+          <h3>Credentials that are going to be issued:</h3>
+          <Space />
+          {credentialsToBeIssued.map(c => (
+            <>
+              <Card name={c.type} properties={c.display.properties} />
+              <Space />
+            </>
+          ))}
+        </div>
       </div>
     </InteractionTemplate>
   )

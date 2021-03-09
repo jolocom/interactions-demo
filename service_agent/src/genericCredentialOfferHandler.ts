@@ -66,35 +66,35 @@ const getBase64FromUrl = async (url: string) => {
 export const genericCredentialOfferHandler = (
   agent: Agent,
 ): RPCRequest => async (
-  req: OfferRequestParameters,
+  req: OfferRequestParameters[],
   { createInteractionCallbackURL, wrapJWT },
 ) => {
-  const { name, type, claims, renderAs } = req
-  if (!type) throw new Error('type is required')
+  // const { name, type, claims, renderAs } = req
+  // if (!type) throw new Error('type is required')  
 
   return wrapJWT(
     await agent.credOfferToken({
       callbackURL: createInteractionCallbackURL(handleCredentialOfferResponse),
-      offeredCredentials: [generateCredentialOffer(req)],
+      offeredCredentials: req.map(r => generateCredentialOffer(r)),
     }),
   )
 
   async function handleCredentialOfferResponse(jwt: string) {
-    const interaction = await agent.processJWT(jwt)
+    const interaction = await agent.processJWT(jwt);
 
     // NOTE: encoding the photo property if it's available
-    if (claims['photo']) {
-      claims['photo'] = await getBase64FromUrl(claims['photo'])
-    }
+    // if (claims['photo']) {
+    //   claims['photo'] = await getBase64FromUrl(claims['photo'])
+    // }
 
-    const state = interaction.getSummary().state as CredentialOfferFlowState
+    const state = interaction.getSummary().state as CredentialOfferFlowState;    
     const credentials = await interaction.issueSelectedCredentials(
       state.selectedTypes.reduce((acc, type) => {
         return {
           ...acc,
           [type]: () => ({
-            claim: claims,
-            metadata: generateMetadata(type, name, claims),
+            // claim: claims,
+            // metadata: generateMetadata(type, name, claims),
           }),
         }
       }, {}),
