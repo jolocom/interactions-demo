@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import styles from './InteractionTemplate.module.css'
 import { InteractionBtn } from '../InteractionBtn'
+import { InteractionQR } from '../InteractionQR'
 
 interface IInteractionTemplateProps {
   startHandler: () => Promise<{ qr?: string; jwt?: string; err?: string }>
@@ -30,8 +31,7 @@ export const InteractionTemplate: React.FC<IInteractionTemplateProps> = ({
       <div className={styles['btn-container']}>
         <InteractionBtn onClick={startBtnHandler} text={startText} />
         {err && <b>Error</b>}
-        {jwt && <p className={styles['jwt']}>{jwt}</p>}
-
+        <InteractionQR jwt={jwt} />
         {!err && qr && (
           <img src={qr} className={styles['qr-code']} alt="QR Code" />
         )}

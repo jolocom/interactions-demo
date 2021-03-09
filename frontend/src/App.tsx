@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './reset.css'
 import './App.css'
-import { EstablishChannelContainer } from './ui/establishChannel'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import { RpcRoutes } from './config'
 import { Authentication } from './flows/Authentication'
@@ -9,6 +8,7 @@ import { Authorization } from './flows/Authorization'
 import { CredentialRequest } from './flows/CredentialRequest'
 import { CredentialOffer } from './flows/CredentialOffer'
 import { CredentialOfferCustom } from './flows/CredentialOfferCustom'
+import { EstablishChannel } from './flows/EstablishChannel'
 const jolocomLogo = require('./images/JO_icon.svg')
 
 interface AppProps {
@@ -43,10 +43,6 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
       </header>
       <main className="main">
         <article className="c-qrcode-container">
-          <EstablishChannelContainer
-            serviceAPI={serviceAPI}
-            jwtCommand={jwtCommand}
-          />
           <Authentication serviceAPI={serviceAPI} />
           <Authorization serviceAPI={serviceAPI} />
           <CredentialRequest
@@ -58,6 +54,7 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
             credTypes={availableCredTypes}
           />
           <CredentialOfferCustom serviceAPI={serviceAPI} />
+          <EstablishChannel serviceAPI={serviceAPI} jwtCommand={jwtCommand} />
         </article>
       </main>
     </React.Fragment>

@@ -15,13 +15,6 @@
   padding: 20px;
 }
 
-.jwt {
-  word-wrap: break-word;
-  max-width: 50vw;
-  white-space: pre-wrap;
-  font-family: monospace;
-}
-
 .qr-code {
   max-width: 100%;
 }
