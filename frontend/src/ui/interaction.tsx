@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionButton } from './interactionButton'
 import { SelectionComponent } from './selectionComponent'
 import { InteractionType, RpcRoutes } from '../config'
+import { InteractionTemplate } from '../components/InteractionTemplate'
 
 interface Props {
   interactionType: InteractionType
@@ -23,7 +23,7 @@ export const PeerResolutionContainer = ({
   }
 
   return (
-    <InteractionContainer
+    <InteractionTemplate
       startText="Start Peer Resolution Interaction"
       startHandler={startAuth}
     >
@@ -41,7 +41,7 @@ export const PeerResolutionContainer = ({
           onChange={e => setDescription(e.target.value)}
         />*/}
       </div>
-    </InteractionContainer>
+    </InteractionTemplate>
   )
 }
 
@@ -81,7 +81,7 @@ export const CredOfferContainer = ({
   }
 
   return (
-    <InteractionContainer
+    <InteractionTemplate
       startText="Start Credential Offer"
       startHandler={startCredOffer}
     >
@@ -98,78 +98,7 @@ export const CredOfferContainer = ({
         onSelect={type => setInvalid(handleSelect(invalidCredentials, type))}
         selectedItems={invalidCredentials}
       />
-    </InteractionContainer>
-  )
-}
-
-export const InteractionContainer = ({
-  startHandler,
-  startText,
-  children,
-}: {
-  startHandler: () => Promise<{ qr?: string; jwt?: string; err?: string }>
-  startText: string
-  children: React.ReactNode
-}) => {
-  const [qr, setQr] = useState<string | undefined>()
-  const [jwt, setJwt] = useState<string>()
-  const [err, setErr] = useState<string | undefined>()
-
-  const startBtnHandler = async () => {
-    const resp = await startHandler()
-    setQr(resp.qr)
-    setJwt(resp.jwt)
-    setErr(resp.err)
-  }
-
-  return (
-    <div
-      style={{
-        background: '#ffefdf',
-        marginTop: '70px',
-        marginBottom: '70px',
-        marginLeft: '10px',
-        marginRight: '10px',
-        padding: '30px',
-        boxShadow: '0px 0px 80px 2px gray',
-        borderRadius: '40px',
-      }}
-    >
-      {children}
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px',
-        }}
-      >
-        <InteractionButton onClick={startBtnHandler} text={startText} />
-
-        {err ? (
-          <b>Error</b>
-        ) : (
-          jwt && (
-            <div>
-              <div
-                style={{
-                  wordWrap: 'break-word',
-                  maxWidth: '50vw',
-                  whiteSpace: 'pre-wrap',
-                  fontFamily: 'monospace',
-                }}
-              >
-                {jwt}
-              </div>
-            </div>
-          )
-        )}
-
-        {!err && qr && <img src={qr} className="c-qrcode" alt="QR Code" />}
-      </div>
-    </div>
+    </InteractionTemplate>
   )
 }
 
@@ -211,7 +140,7 @@ export const CredShareContainer = ({
   }
 
   return (
-    <InteractionContainer
+    <InteractionTemplate
       startText="Start Credential Request Interaction"
       startHandler={startCredRequest}
     >
@@ -225,6 +154,6 @@ export const CredShareContainer = ({
         selectedItems={requestedCredentials}
       />
       <div style={{ paddingTop: '20px' }}></div>
-    </InteractionContainer>
+    </InteractionTemplate>
   )
 }

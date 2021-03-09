@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { RpcRoutes } from '../config'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionContainer } from './interaction'
+import { InteractionTemplate } from '../components/InteractionTemplate'
 
 export const AuthenticationContainer = ({
   serviceAPI,
@@ -18,7 +18,7 @@ export const AuthenticationContainer = ({
   }
 
   return (
-    <InteractionContainer
+    <InteractionTemplate
       startText="Start Authentication Interaction"
       startHandler={startAuth}
     >
@@ -36,6 +36,6 @@ export const AuthenticationContainer = ({
           onChange={e => setDescription(e.target.value)}
         />
       </div>
-    </InteractionContainer>
+    </InteractionTemplate>
   )
 }

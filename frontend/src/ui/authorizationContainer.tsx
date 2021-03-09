@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { RpcRoutes } from '../config'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionContainer } from './interaction'
+import { InteractionTemplate } from '../components/InteractionTemplate'
 
 const IMAGE_URL_PLACEHOLDER =
   'http://www.pngmart.com/files/10/Vespa-Scooter-PNG-Pic.png'
@@ -27,7 +27,7 @@ export const AuthorizationContainer = ({
   }
 
   return (
-    <InteractionContainer
+    <InteractionTemplate
       startText="Start Authorization Interaction"
       startHandler={startAuthz}
     >
@@ -74,6 +74,6 @@ export const AuthorizationContainer = ({
           onChange={e => setImage(e.target.value)}
         />
       </div>
-    </InteractionContainer>
+    </InteractionTemplate>
   )
 }

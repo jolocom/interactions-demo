@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionContainer } from './interaction'
 import { RpcRoutes } from '../config'
+import { InteractionTemplate } from '../components/InteractionTemplate'
 
 const TextInput: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -95,7 +95,7 @@ export const GenericCredentialOfferContainer = ({
 
   const handleCreateNewField = () => {
     if (newField.length) {
-      const newFieldName = lowercaseFirst(newField.replace(' ',''))
+      const newFieldName = lowercaseFirst(newField.replace(' ', ''))
       setInputs(prev => {
         return [
           ...prev,
@@ -158,9 +158,9 @@ export const GenericCredentialOfferContainer = ({
         claims[inp.fieldName] = inp.value
         return {
           path: [`$.${inp.fieldName}`],
-          label: inp.label
+          label: inp.label,
         }
-      })
+      }),
     }
 
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
@@ -170,7 +170,7 @@ export const GenericCredentialOfferContainer = ({
         name: credName,
         type: credType,
         claims,
-        display
+        display,
       },
     )
 
@@ -178,7 +178,7 @@ export const GenericCredentialOfferContainer = ({
   }
 
   return (
-    <InteractionContainer
+    <InteractionTemplate
       startText="Send Credential"
       startHandler={handleSubmit}
     >
@@ -240,7 +240,12 @@ export const GenericCredentialOfferContainer = ({
                 </button>
               )}
             </div>
-            <TextInput {...rest} placeholder="label" value={label} onChange={handleInputChange} />
+            <TextInput
+              {...rest}
+              placeholder="label"
+              value={label}
+              onChange={handleInputChange}
+            />
             <TextInput {...rest} onChange={handleInputChange} />
           </div>
         ))}
@@ -276,6 +281,6 @@ export const GenericCredentialOfferContainer = ({
           +
         </button>
       </div>
-    </InteractionContainer>
+    </InteractionTemplate>
   )
 }
