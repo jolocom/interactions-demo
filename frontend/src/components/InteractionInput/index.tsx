@@ -1,4 +1,5 @@
 import React from 'react'
+import { Space } from '../Space'
 import styles from './Input.module.css'
 
 interface IInteractionInputProps {
@@ -17,7 +18,8 @@ export const InteractionInput: React.FC<IInteractionInputProps> = ({
   }
 
   return (
-    <div className={styles['input-container']}>
+    <>
+      <Space />
       <h4>{label}</h4>
       <input
         className={styles['input']}
@@ -26,6 +28,6 @@ export const InteractionInput: React.FC<IInteractionInputProps> = ({
         value={value}
         onChange={handleChange}
       />
-    </div>
+    </>
   )
 }

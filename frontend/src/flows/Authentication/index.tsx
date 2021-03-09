@@ -17,8 +17,6 @@ export const Authentication: React.FC<IAuthenticationProps> = ({
       qr: string
       err: string
     } = await serviceAPI.sendRPC(RpcRoutes.authnInterxn, { description })
-    console.log({ resp })
-
     return resp
   }
 

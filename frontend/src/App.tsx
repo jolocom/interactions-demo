@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import './reset.css'
 import './App.css'
-import {
-  CredOfferContainer,
-  PeerResolutionContainer,
-  CredShareContainer,
-} from './ui/interaction'
+import { CredOfferContainer, PeerResolutionContainer } from './ui/interaction'
 import { EstablishChannelContainer } from './ui/establishChannel'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import { RpcRoutes } from './config'
 import { GenericCredentialOfferContainer } from './ui/genericCredentialOfferContainer'
 import { Authentication } from './flows/Authentication'
 import { Authorization } from './flows/Authorization'
+import { CredentialRequest } from './flows/CredentialRequest'
 const jolocomLogo = require('./images/JO_icon.svg')
 
 interface AppProps {
@@ -55,13 +52,12 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
             serviceAPI={serviceAPI}
             credTypes={availableCredTypes}
           />
-
-          <CredShareContainer
+          <Authentication serviceAPI={serviceAPI} />
+          <Authorization serviceAPI={serviceAPI} />
+          <CredentialRequest
             serviceAPI={serviceAPI}
             credTypes={requestableCredTypes}
           />
-          <Authentication serviceAPI={serviceAPI} />
-          <Authorization serviceAPI={serviceAPI} />
           <GenericCredentialOfferContainer serviceAPI={serviceAPI} />
         </article>
       </main>

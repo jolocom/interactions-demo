@@ -15,7 +15,6 @@ export const InteractionBtn: React.FC<IInteractionBtnProps> = ({
     <button onClick={onClick} className={styles['btn-container']}>
       <img
         src={jolocomLogo}
-        style={{ width: '100%' }}
         className={styles['btn-icon']}
         alt="Jolocom logo"
       />
