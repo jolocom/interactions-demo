@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { RpcRoutes } from '../config'
-import { InteractionTemplate } from '../components/InteractionTemplate'
+import styles from './CredentialOfferCustom.module.css'
+import { RpcRoutes } from '../../config'
+import { InteractionTemplate } from '../../components/InteractionTemplate'
+import { generateString, lowercaseFirst } from './utils'
+import { documentInputs, documentTypes, renderAsForType } from './config'
+import { CredentialTypes } from './types'
+import { Space } from '../../components/Space'
+import { InteractionInput } from '../../components/InteractionInput'
+import { ClaimInput } from './ClaimInput'
 
 const TextInput: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -22,57 +29,7 @@ const TextInput: React.FC<{
   />
 )
 
-const generateString = () =>
-  Math.random()
-    .toString(36)
-    .substr(2, 5)
-
-const lowercaseFirst = (val: string) =>
-  val.charAt(0).toLowerCase() + val.slice(1)
-
-enum CredentialTypes {
-  ProofOfIdCredentialDemo = 'ProofOfIdCredentialDemo',
-  ProofOfDriverLicenceDemo = 'ProofOfDriverLicenceDemo',
-  ProofOfTicketDemo = 'ProofOfTicketDemo',
-}
-
-const documentTypes = [
-  CredentialTypes.ProofOfDriverLicenceDemo,
-  CredentialTypes.ProofOfIdCredentialDemo,
-]
-
-const renderAsForType = {
-  [CredentialTypes.ProofOfDriverLicenceDemo]: 'document',
-  [CredentialTypes.ProofOfIdCredentialDemo]: 'document',
-  [CredentialTypes.ProofOfTicketDemo]: 'ticket',
-}
-
-const documentInputs = [
-  {
-    name: 'givenName',
-    label: 'Given Name',
-    value: '',
-    fieldName: 'givenName',
-    placeholder: '(mandatory)',
-  },
-  {
-    name: 'familyName',
-    label: 'Family Name',
-    value: '',
-    fieldName: 'familyName',
-    placeholder: '(mandatory)',
-  },
-  {
-    name: 'photo',
-    label: 'Photograph',
-    value:
-      'https://i.pinimg.com/564x/64/4d/dc/644ddca56c43e4b01af5aec27e010feb.jpg',
-    fieldName: 'photo',
-    placeholder: '(mandatory)',
-  },
-]
-
-export const GenericCredentialOfferContainer = ({
+export const CredentialOfferCustom = ({
   serviceAPI,
 }: {
   serviceAPI: JolocomWebServiceClient
@@ -183,99 +140,75 @@ export const GenericCredentialOfferContainer = ({
       startHandler={handleSubmit}
     >
       <h2>Custom Credentials</h2>
-      <h4 style={{ marginBottom: '20px' }}>
+      <h4>
         <i>(For UI testing)</i>
       </h4>
+      <Space />
       <div>
         <h3>Credential type</h3>
-        <select
-          style={{ width: '100%', marginTop: '20px', marginBottom: '20px' }}
-          onChange={handleTypeChange}
-        >
+        <Space />
+        <select onChange={handleTypeChange}>
           {Object.values(CredentialTypes).map(type => (
             <option value={type}>{type}</option>
           ))}
         </select>
+        <Space />
       </div>
-      <div style={{ marginBottom: '20px' }}>
-        <h3>Credential name</h3>
-        <TextInput
-          name="credentialName"
-          value={credName}
-          placeholder="(mandatory)"
-          onChange={e => setCredName(e.target.value)}
-        />
-      </div>
-      <div style={{ paddingBottom: '30px' }}>
-        <h3>Claims</h3>
-        {inputs.map(({ fieldName, label, ...rest }) => (
+      <InteractionInput
+        label="Credential name"
+        value={credName}
+        setValue={setCredName}
+      />
+      <h3>Claims</h3>
+      {inputs.map(({ fieldName, label, ...rest }) => (
+        <div
+          style={{
+            paddingTop: '20px',
+            paddingLeft: '50px',
+            paddingRight: '50px',
+          }}
+        >
           <div
             style={{
-              paddingTop: '20px',
-              paddingLeft: '50px',
-              paddingRight: '50px',
+              width: '100%',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
             }}
           >
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-              }}
-            >
-              <h4>{fieldName}</h4>
-              {!documentInputs.map(v => v.name).includes(rest.name) && (
-                <button
-                  onClick={() => handleRemove(rest.name)}
-                  style={{
-                    height: 20,
-                    width: 20,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  x
-                </button>
-              )}
-            </div>
-            <TextInput
-              {...rest}
-              placeholder="label"
-              value={label}
-              onChange={handleInputChange}
-            />
-            <TextInput {...rest} onChange={handleInputChange} />
+            <h4>{fieldName}</h4>
+            {documentInputs.map(v => v.name).includes(rest.name) && (
+              <button
+                onClick={() => handleRemove(rest.name)}
+                className={styles['close-btn']}
+              >
+                x
+              </button>
+            )}
           </div>
-        ))}
-      </div>
-      <div
-        style={{
-          paddingLeft: '50px',
-          paddingRight: '50px',
-        }}
-      >
-        <h4 style={{ color: 'gray' }}>New claim</h4>
-        <TextInput
-          name="newField"
-          value={newField}
-          onChange={e => setNewField(e.target.value)}
-          placeholder="e.g. birthDate"
-        />
-        <TextInput
-          name="newFieldLabel"
-          value={newFieldLabel}
-          onChange={e => setNewFieldLabel(e.target.value)}
-          placeholder="e.g. Date of Birth"
+          <TextInput
+            {...rest}
+            placeholder="label"
+            value={label}
+            onChange={handleInputChange}
+          />
+          <TextInput {...rest} onChange={handleInputChange} />
+        </div>
+      ))}
+      <Space />
+      <div className={styles['field-section']}>
+        <ClaimInput
+          label="New claim"
+          claimKey={newField}
+          claimLabel={newFieldLabel}
+          keyPlaceholder="e.g. birthDate"
+          labelPlaceholder="e.g. Date of Birth"
+          setClaimKey={setNewField}
+          setClaimLabel={setNewFieldLabel}
         />
         <button
-          style={{
-            width: '100%',
-            marginTop: '10px',
-            height: '30px',
-            backgroundColor: '#fff1e3',
-          }}
+          className={styles['plus-btn']}
+          disabled={!newField.length}
           onClick={handleCreateNewField}
         >
           +

@@ -1,56 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { SelectionComponent } from './selectionComponent'
-import { InteractionType, RpcRoutes } from '../config'
-import { InteractionTemplate } from '../components/InteractionTemplate'
+import React, { useEffect, useState } from 'react'
+import { InteractionCredentialSelect } from '../../components/InteractionCredentialSelect'
+import { InteractionTemplate } from '../../components/InteractionTemplate'
+import { RpcRoutes } from '../../config'
+import { IFlowProps } from '../../types/flow'
 
-interface Props {
-  interactionType: InteractionType
+interface ICredentialOfferProps extends IFlowProps {
+  credTypes: string[]
 }
 
-export const PeerResolutionContainer = ({
-  serviceAPI,
-}: {
-  serviceAPI: JolocomWebServiceClient
-}) => {
-  //const [description, setDescription] = useState<string>('Unlock your scooter')
-  const startAuth = async () => {
-    const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
-      RpcRoutes.peerResolutionInterxn,
-    )
-    console.log(resp)
-    return resp
-  }
-
-  return (
-    <InteractionTemplate
-      startText="Start Peer Resolution Interaction"
-      startHandler={startAuth}
-    >
-      <h2>Peer Resolution Interaction</h2>
-      <div style={{ paddingTop: '20px' }}>
-        {/*<h4>Description</h4>
-        <input
-          style={{
-            margin: '10px',
-            width: '100%',
-          }}
-          type="text"
-          name="description"
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-        />*/}
-      </div>
-    </InteractionTemplate>
-  )
-}
-
-export const CredOfferContainer = ({
+export const CredentialOffer: React.FC<ICredentialOfferProps> = ({
   serviceAPI,
   credTypes,
-}: {
-  serviceAPI: JolocomWebServiceClient
-  credTypes: string[]
 }) => {
   const [issuedCredentials, setIssued] = useState<Array<string>>([])
   const [invalidCredentials, setInvalid] = useState<Array<string>>([])
@@ -86,13 +46,13 @@ export const CredOfferContainer = ({
       startHandler={startCredOffer}
     >
       <h2>Credential Offer</h2>
-      <SelectionComponent
+      <InteractionCredentialSelect
         title={'Available Credentials'}
         options={availableIssueCredentials}
         onSelect={type => setIssued(handleSelect(issuedCredentials, type))}
         selectedItems={issuedCredentials}
       />
-      <SelectionComponent
+      <InteractionCredentialSelect
         title={'Break Credentials'}
         options={issuedCredentials}
         onSelect={type => setInvalid(handleSelect(invalidCredentials, type))}

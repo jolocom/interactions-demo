@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import './reset.css'
 import './App.css'
-import { CredOfferContainer, PeerResolutionContainer } from './ui/interaction'
 import { EstablishChannelContainer } from './ui/establishChannel'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import { RpcRoutes } from './config'
-import { GenericCredentialOfferContainer } from './ui/genericCredentialOfferContainer'
 import { Authentication } from './flows/Authentication'
 import { Authorization } from './flows/Authorization'
 import { CredentialRequest } from './flows/CredentialRequest'
+import { CredentialOffer } from './flows/CredentialOffer'
+import { CredentialOfferCustom } from './flows/CredentialOfferCustom'
 const jolocomLogo = require('./images/JO_icon.svg')
 
 interface AppProps {
@@ -47,18 +47,17 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
             serviceAPI={serviceAPI}
             jwtCommand={jwtCommand}
           />
-
-          <CredOfferContainer
-            serviceAPI={serviceAPI}
-            credTypes={availableCredTypes}
-          />
           <Authentication serviceAPI={serviceAPI} />
           <Authorization serviceAPI={serviceAPI} />
           <CredentialRequest
             serviceAPI={serviceAPI}
             credTypes={requestableCredTypes}
           />
-          <GenericCredentialOfferContainer serviceAPI={serviceAPI} />
+          <CredentialOffer
+            serviceAPI={serviceAPI}
+            credTypes={availableCredTypes}
+          />
+          <CredentialOfferCustom serviceAPI={serviceAPI} />
         </article>
       </main>
     </React.Fragment>
