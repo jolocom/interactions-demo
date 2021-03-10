@@ -70,8 +70,8 @@ export const genericCredentialOfferHandler = (
   { createInteractionCallbackURL, wrapJWT },
 ) => {
   // const { name, type, claims, renderAs } = req
-  // if (!type) throw new Error('type is required')  
-
+  // if (!type) throw new Error('type is required') 
+  
   return wrapJWT(
     await agent.credOfferToken({
       callbackURL: createInteractionCallbackURL(handleCredentialOfferResponse),
@@ -81,7 +81,7 @@ export const genericCredentialOfferHandler = (
 
   async function handleCredentialOfferResponse(jwt: string) {
     const interaction = await agent.processJWT(jwt);
-
+    
     // NOTE: encoding the photo property if it's available
     // if (claims['photo']) {
     //   claims['photo'] = await getBase64FromUrl(claims['photo'])
@@ -90,11 +90,12 @@ export const genericCredentialOfferHandler = (
     const state = interaction.getSummary().state as CredentialOfferFlowState;    
     const credentials = await interaction.issueSelectedCredentials(
       state.selectedTypes.reduce((acc, type) => {
+        const reqDetails = req.find(r => r.type === type);
         return {
           ...acc,
           [type]: () => ({
-            // claim: claims,
-            // metadata: generateMetadata(type, name, claims),
+            claim: reqDetails.claims,
+            metadata: generateMetadata(reqDetails.type, reqDetails.name, reqDetails.claims),
           }),
         }
       }, {}),
