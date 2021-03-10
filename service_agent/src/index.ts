@@ -85,13 +85,18 @@ const credMetadata = {
     CredTypes.DemoDriversLicense,
     "Demonstration Driver's License Credential",
   ),
-  /* NOTE: These are the types supported in Custom credential offer flow
-   No need to add metadata here, as in genericCredentialOffer 
-   issuance method custom metadata is added. 
-  */ 
-  [CredTypes.ProofOfIdCredentialDemo]: {},
-  [CredTypes.ProofOfDriverLicenceDemo]: {},
-  [CredTypes.ProofOfTicketDemo]: {}
+  [CredTypes.ProofOfIdCredentialDemo]: genericMetadata(
+    CredTypes.ProofOfIdCredentialDemo,
+    'ProofOfIdCredentialDemo',
+  ),
+  [CredTypes.ProofOfDriverLicenceDemo]: genericMetadata(
+    CredTypes.ProofOfDriverLicenceDemo,
+    'ProofOfDriverLicenceDemo',
+  ),
+  [CredTypes.ProofOfTicketDemo]: genericMetadata(
+    CredTypes.ProofOfTicketDemo,
+    'ProofOfTicketDemo',
+  )
 }
 
 const offeredCredentials = [
