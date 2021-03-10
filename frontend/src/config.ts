@@ -1,15 +1,3 @@
-export enum ServiceCredentials {
-  FirstCredential = 'FirstCredential',
-  SecondCredential = 'SecondCredential',
-  ThirdCredential = 'ThirdCredential',
-}
-
-export enum InteractionType {
-  Receive = 'receive',
-  Share = 'share',
-  Auth = 'auth',
-}
-
 export enum RpcRoutes {
   peerResolutionInterxn = 'peerResolutionInterxn',
   authzInterxn = 'authzInterxn',

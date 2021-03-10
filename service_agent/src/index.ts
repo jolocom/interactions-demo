@@ -39,6 +39,9 @@ enum CredTypes {
   DemoCred = 'DemoCred',
   DemoIdCard = 'DemoIdCard',
   DemoDriversLicense = 'DemoDriversLicense',
+  ProofOfIdCredentialDemo = 'ProofOfIdCredentialDemo',
+  ProofOfDriverLicenceDemo = 'ProofOfDriverLicenceDemo',
+  ProofOfTicketDemo = 'ProofOfTicketDemo',
 }
 
 const genericMetadata = (type: CredTypes, name: string) => ({
@@ -82,6 +85,13 @@ const credMetadata = {
     CredTypes.DemoDriversLicense,
     "Demonstration Driver's License Credential",
   ),
+  /* NOTE: These are the types supported in Custom credential offer flow
+   No need to add metadata here, as in genericCredentialOffer 
+   issuance method custom metadata is added. 
+  */ 
+  [CredTypes.ProofOfIdCredentialDemo]: {},
+  [CredTypes.ProofOfDriverLicenceDemo]: {},
+  [CredTypes.ProofOfTicketDemo]: {}
 }
 
 const offeredCredentials = [
@@ -117,7 +127,9 @@ export const init = async () => {
 
   const publicHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
   const publicPort = publicHostport.split(':')[1]
-  const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000
+  const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000;
+
+
 
   const server = new hapi.Server({
     port: listenPort,
