@@ -14,12 +14,13 @@ import { ClaimInput } from './ClaimInput'
 import styles from './CredentialOfferCustom.module.css'
 
 interface ICardProps {
+  id: number
   type: string
   properties: Array<Record<string, any>>
-  onRemove: (type: string) => void
+  onRemove: (id: number) => void
 }
 
-const Card: React.FC<ICardProps> = ({ type, properties, onRemove }) => {
+const Card: React.FC<ICardProps> = ({ id, type, properties, onRemove }) => {
   return (
     <div className={styles['card-container']}>
       <h3>{type}</h3>
@@ -28,7 +29,7 @@ const Card: React.FC<ICardProps> = ({ type, properties, onRemove }) => {
         <p key={p.label}>{p.label}</p>
       ))}
       <button
-        onClick={() => onRemove(type)}
+        onClick={() => onRemove(id)}
         className={`${styles['close-btn']} ${styles['floating']}`}
       >
         x
@@ -155,6 +156,7 @@ export const CredentialOfferCustom = ({
       }),
     }
     const offerRequestDetails = {
+      id: Date.now(),
       renderAs: renderAsForType[credType],
       name: credName,
       type: credType,
@@ -180,10 +182,8 @@ export const CredentialOfferCustom = ({
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
   }
 
-  const handleRemoveCredentials = (type: string) => {
-    setCredentialsToBeIssued(prevState =>
-      prevState.filter(c => c.type !== type),
-    )
+  const handleRemoveCredentials = (id: number) => {
+    setCredentialsToBeIssued(prevState => prevState.filter(c => c.id !== id))
   }
 
   return (
@@ -284,14 +284,15 @@ export const CredentialOfferCustom = ({
             </h5>
           ) : (
             credentialsToBeIssued.map(c => (
-              <>
+              <div key={c.id}>
                 <Card
+                  id={c.id}
                   type={c.type}
                   properties={c.display.properties}
                   onRemove={handleRemoveCredentials}
                 />
                 <Space />
-              </>
+              </div>
             ))
           )}
         </div>
