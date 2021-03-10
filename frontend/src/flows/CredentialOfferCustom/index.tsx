@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
 import styles from './CredentialOfferCustom.module.css'
 import { RpcRoutes } from '../../config'
@@ -35,7 +35,6 @@ const TextInput: React.FC<{
 }> = ({ onChange, value, name, placeholder }) => (
   <input
     style={{
-      marginTop: '10px',
       width: '100%',
     }}
     type="text"
@@ -115,7 +114,11 @@ export const CredentialOfferCustom = ({
 
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value as CredentialTypes
-    if (documentTypes.includes(selected)) {
+    setCredType(selected)
+  }
+
+  useEffect(() => {
+    if (documentTypes.includes(credType)) {
       if (!inputs.find(v => v.name === 'givenName'))
         setInputs(prev => [...documentInputs, ...prev])
     } else {
@@ -128,8 +131,7 @@ export const CredentialOfferCustom = ({
         return filteredInputs
       })
     }
-    setCredType(selected)
-  }
+  }, [credType])
 
   const handleAddIssuedCredential = () => {
     const claims: Record<string, string> = {}
@@ -150,7 +152,8 @@ export const CredentialOfferCustom = ({
       display,
     }
     setCredentialsToBeIssued(prevState => [...prevState, offerRequestDetails])
-    // setInputs(defaultInputs)
+
+    handleResetOnboarding()
   }
 
   const handleSubmit = async () => {
@@ -158,11 +161,14 @@ export const CredentialOfferCustom = ({
       RpcRoutes.genericCredentialOffer,
       credentialsToBeIssued,
     )
-
     return resp
   }
 
-  console.log({ credentialsToBeIssued })
+  const handleResetOnboarding = () => {
+    setInputs(defaultInputs)
+    setCredName('')
+    setCredType(CredentialTypes.ProofOfIdCredentialDemo)
+  }
 
   return (
     <InteractionTemplate
@@ -186,18 +192,22 @@ export const CredentialOfferCustom = ({
             </select>
             <Space />
           </div>
+          <Space />
+          <h3>Credential friendly name</h3>
+          <Space />
           <InteractionInput
-            label="Credential name"
+            withoutLabel
             value={credName}
             setValue={setCredName}
+            placeholder="e.g. Demonstration Credential"
           />
+          <Space />
+          <Space />
           <h3>Claims</h3>
           {inputs.map(({ fieldName, label, ...rest }) => (
             <div
               style={{
                 paddingTop: '20px',
-                paddingLeft: '50px',
-                paddingRight: '50px',
               }}
             >
               <div
@@ -247,7 +257,7 @@ export const CredentialOfferCustom = ({
             </button>
           </div>
           <InteractionBtn
-            text="Add to issue"
+            text="Add for issuance"
             onClick={handleAddIssuedCredential}
           />
         </div>

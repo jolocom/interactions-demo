@@ -7,7 +7,8 @@
   border-radius: 4px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  margin: 20px;
+  margin: auto;
+  margin-top: 20px;
 }
 
 .btn-icon {

@@ -15,14 +15,14 @@ export const documentInputs = [
     fieldName: 'familyName',
     placeholder: '(mandatory)',
   },
-  {
-    name: 'photo',
-    label: 'Photograph',
-    value:
-      'https://i.pinimg.com/564x/64/4d/dc/644ddca56c43e4b01af5aec27e010feb.jpg',
-    fieldName: 'photo',
-    placeholder: '(mandatory)',
-  },
+  // {
+  //   name: 'photo',
+  //   label: 'Photograph',
+  //   value:
+  //     'https://i.pinimg.com/564x/64/4d/dc/644ddca56c43e4b01af5aec27e010feb.jpg',
+  //   fieldName: 'photo',
+  //   placeholder: '(mandatory)',
+  // },
 ]
 
 export const documentTypes = [
