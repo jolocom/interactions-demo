@@ -235,14 +235,12 @@ export const CredentialOfferCustom = ({
                 }}
               >
                 <h4>{fieldName}</h4>
-                {documentInputs.map(v => v.name).includes(rest.name) && (
-                  <button
-                    onClick={() => handleRemove(rest.name)}
-                    className={styles['close-btn']}
-                  >
-                    x
-                  </button>
-                )}
+                <button
+                  onClick={() => handleRemove(rest.name)}
+                  className={styles['close-btn']}
+                >
+                  x
+                </button>
               </div>
               <TextInput
                 {...rest}
