@@ -1,5 +1,5 @@
 import React from 'react'
-import { InteractionInput } from '../../components/InteractionInput'
+import { InteractionInput } from 'components/InteractionInput'
 
 interface IClaimInputProps {
   label: string

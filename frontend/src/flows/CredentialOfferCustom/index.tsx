@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import styles from './CredentialOfferCustom.module.css'
-import { RpcRoutes } from '../../config'
-import { InteractionTemplate } from '../../components/InteractionTemplate'
+
+import { RpcRoutes } from 'config'
+import { InteractionTemplate } from 'components/InteractionTemplate'
+import { Space } from 'components/Space'
+import { InteractionBtn } from 'components/InteractionBtn'
+import { InteractionInput } from 'components/InteractionInput'
+
 import { generateString, lowercaseFirst } from './utils'
 import { documentInputs, documentTypes, renderAsForType } from './config'
 import { CredentialTypes } from './types'
-import { Space } from '../../components/Space'
-import { InteractionInput } from '../../components/InteractionInput'
 import { ClaimInput } from './ClaimInput'
-import { InteractionBtn } from '../../components/InteractionBtn'
+import styles from './CredentialOfferCustom.module.css'
 
 interface ICardProps {
   type: string

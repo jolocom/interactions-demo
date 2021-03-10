@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 
-import { InteractionTemplate } from '../../components/InteractionTemplate'
-import { RpcRoutes } from '../../config'
-import { IFlowProps } from '../../types/flow'
-import { InteractionInput } from '../../components/InteractionInput'
+import { InteractionTemplate } from 'components/InteractionTemplate'
+import { InteractionInput } from 'components/InteractionInput'
+import { RpcRoutes } from 'config'
+import { IFlowProps } from 'types/flow'
 
 interface IAuthenticationProps extends IFlowProps {}
 

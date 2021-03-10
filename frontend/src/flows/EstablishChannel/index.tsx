@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
+
+import { RpcRoutes } from 'config'
+import { InteractionBtn } from 'components/InteractionBtn'
+import { InteractionQR } from 'components/InteractionQR'
+import { InteractionInput } from 'components/InteractionInput'
+
 import styles from './EstablishChannel.module.css'
-import { RpcRoutes } from '../../config'
-import { InteractionBtn } from '../../components/InteractionBtn'
-import { InteractionQR } from '../../components/InteractionQR'
-import { InteractionInput } from '../../components/InteractionInput'
 
 export const EstablishChannel = ({
   serviceAPI,

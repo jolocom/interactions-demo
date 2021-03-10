@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { InteractionCredentialSelect } from '../../components/InteractionCredentialSelect'
-import { InteractionTemplate } from '../../components/InteractionTemplate'
-import { Space } from '../../components/Space'
-import { RpcRoutes } from '../../config'
-import { IFlowProps } from '../../types/flow'
+import { InteractionCredentialSelect } from 'components/InteractionCredentialSelect'
+import { InteractionTemplate } from 'components/InteractionTemplate'
+import { Space } from 'components/Space'
+import { RpcRoutes } from 'config'
+import { IFlowProps } from 'types/flow'
 
 interface ICredentialShareProps extends IFlowProps {
   credTypes: string[]
