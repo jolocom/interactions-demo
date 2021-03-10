@@ -12,17 +12,25 @@ import { ClaimInput } from './ClaimInput'
 import { InteractionBtn } from '../../components/InteractionBtn'
 
 interface ICardProps {
-  name: string
+  type: string
   properties: Array<Record<string, any>>
+  onRemove: (type: string) => void
 }
-const Card: React.FC<ICardProps> = ({ name, properties }) => {
+
+const Card: React.FC<ICardProps> = ({ type, properties, onRemove }) => {
   return (
     <div className={styles['card-container']}>
-      <h3>{name}</h3>
+      <h3>{type}</h3>
       {properties.length ? <b>Properties:</b> : null}
       {properties.map(p => (
         <p key={p.label}>{p.label}</p>
       ))}
+      <button
+        onClick={() => onRemove(type)}
+        className={`${styles['close-btn']} ${styles['floating']}`}
+      >
+        x
+      </button>
     </div>
   )
 }
@@ -170,6 +178,12 @@ export const CredentialOfferCustom = ({
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
   }
 
+  const handleRemoveCredentials = (type: string) => {
+    setCredentialsToBeIssued(prevState =>
+      prevState.filter(c => c.type !== type),
+    )
+  }
+
   return (
     <InteractionTemplate
       startText="Send Credential"
@@ -264,12 +278,22 @@ export const CredentialOfferCustom = ({
         <div className={styles['credentials-container']}>
           <h3>Credentials that are going to be issued:</h3>
           <Space />
-          {credentialsToBeIssued.map(c => (
-            <>
-              <Card name={c.type} properties={c.display.properties} />
-              <Space />
-            </>
-          ))}
+          {credentialsToBeIssued.length === 0 ? (
+            <h5 className={styles['empty-placeholder']}>
+              Add credentials to see it here
+            </h5>
+          ) : (
+            credentialsToBeIssued.map(c => (
+              <>
+                <Card
+                  type={c.type}
+                  properties={c.display.properties}
+                  onRemove={handleRemoveCredentials}
+                />
+                <Space />
+              </>
+            ))
+          )}
         </div>
       </div>
     </InteractionTemplate>
