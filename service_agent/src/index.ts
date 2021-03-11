@@ -9,10 +9,7 @@ import { JolocomSDK } from '@jolocom/sdk'
 // @ts-ignore
 import { FilePasswordStore } from '@jolocom/sdk-password-store-filesystem'
 import { JolocomTypeormStorage } from '@jolocom/sdk-storage-typeorm'
-import {
-  CredentialRenderTypes,
-  CredentialOffer,
-} from '@jolocom/protocol-ts'
+import { CredentialRenderTypes, CredentialOffer } from '@jolocom/protocol-ts'
 
 import { claimsMetadata } from '@jolocom/protocol-ts'
 import { constraintFunctions } from 'jolocom-lib/js/interactionTokens/credentialRequest'
@@ -68,7 +65,7 @@ const genericOffer = (type: CredTypes, color?: string): CredentialOffer => {
     },
     credential: {
       schema: 'https://schema.org/EducationalOccupationalCredential',
-    }
+    },
   }
 }
 
@@ -96,7 +93,7 @@ const credMetadata = {
   [CredTypes.ProofOfTicketDemo]: genericMetadata(
     CredTypes.ProofOfTicketDemo,
     'ProofOfTicketDemo',
-  )
+  ),
 }
 
 const offeredCredentials = [
@@ -132,9 +129,7 @@ export const init = async () => {
 
   const publicHostport = process.env.SERVICE_HOSTPORT || 'localhost:9000'
   const publicPort = publicHostport.split(':')[1]
-  const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000;
-
-
+  const listenPort = process.env.SERVICE_LISTEN_PORT || publicPort || 9000
 
   const server = new hapi.Server({
     port: listenPort,
@@ -145,10 +140,14 @@ export const init = async () => {
   })
   await server.register(HAPIWebSocket)
 
-  server.log(['info'], `Jolocom SDK with default DIDMethod did:${sdk.didMethods.getDefault().prefix}`)
+  server.log(
+    ['info'],
+    `Jolocom SDK with default DIDMethod did:${
+      sdk.didMethods.getDefault().prefix
+    }`,
+  )
   server.log(['info'], `Initializing Agent...`)
   const jolo = await sdk.initAgent({ passwordStore: passwordStore })
-
 
   server.log(['info'], `Agent ready with DID ${jolo.idw.did}`)
 

@@ -38,7 +38,7 @@ const generateCredentialOffer = ({
   schema,
   claims,
   renderAs,
-  display
+  display,
 }: OfferRequestParameters): CredentialOffer => ({
   type,
   renderInfo: {
@@ -48,8 +48,8 @@ const generateCredentialOffer = ({
   credential: {
     name, //: `${type} Credential`,
     schema,
-    display
-  }
+    display,
+  },
 })
 
 const getBase64FromUrl = async (url: string) => {
@@ -68,36 +68,42 @@ export const genericCredentialOfferHandler = (
 ): RPCRequest => async (
   req: OfferRequestParameters[],
   { createInteractionCallbackURL, wrapJWT },
-) => {  
+) => {
   return wrapJWT(
     await agent.credOfferToken({
       callbackURL: createInteractionCallbackURL(handleCredentialOfferResponse),
-      offeredCredentials: req.map(r => generateCredentialOffer(r)),
+      offeredCredentials: req.map((r) => generateCredentialOffer(r)),
     }),
   )
 
   async function handleCredentialOfferResponse(jwt: string) {
-    const interaction = await agent.processJWT(jwt);
-          
-    const state = interaction.getSummary().state as CredentialOfferFlowState;    
+    const interaction = await agent.processJWT(jwt)
+
+    const state = interaction.getSummary().state as CredentialOfferFlowState
 
     const credentials = await interaction.issueSelectedCredentials(
       state.selectedTypes.reduce((acc, type) => {
-        const reqDetails = req.find(r => r.type === type);
+        const reqDetails = req.find((r) => r.type === type)
         return {
           ...acc,
           [type]: async () => {
-          // NOTE: encoding the photo property if it's available
-          if(reqDetails.claims['photo']){
-            reqDetails.claims['photo'] = await getBase64FromUrl(reqDetails.claims['photo'])
-          }
-          return {
-            claim: reqDetails.claims,
-            metadata: generateMetadata(reqDetails.type, reqDetails.name, reqDetails.claims),
-          }
+            // NOTE: encoding the photo property if it's available
+            if (reqDetails.claims['photo']) {
+              reqDetails.claims['photo'] = await getBase64FromUrl(
+                reqDetails.claims['photo'],
+              )
+            }
+            return {
+              claim: reqDetails.claims,
+              metadata: generateMetadata(
+                reqDetails.type,
+                reqDetails.name,
+                reqDetails.claims,
+              ),
+            }
+          },
         }
-      }
-    }, {}),
+      }, {}),
     )
 
     return interaction.createCredentialReceiveToken(credentials)
