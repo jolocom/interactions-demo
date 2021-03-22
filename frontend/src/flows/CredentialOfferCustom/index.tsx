@@ -11,49 +11,8 @@ import { generateString, lowercaseFirst } from './utils'
 import { documentInputs, documentTypes, renderAsForType } from './config'
 import { CredentialTypes } from './types'
 import { ClaimInput } from './ClaimInput'
+import { Card } from './Card'
 import styles from './CredentialOfferCustom.module.css'
-
-interface ICardProps {
-  id: number
-  type: string
-  name: string
-  properties: Array<Record<string, any>>
-  onRemove: (id: number) => void
-}
-
-const Card: React.FC<ICardProps> = ({
-  id,
-  type,
-  name,
-  properties,
-  onRemove,
-}) => {
-  return (
-    <div className={styles['card-container']}>
-      <div className={styles['card-field']}>
-        <b>Type:</b>
-        <p>{type}</p>
-      </div>
-      <div className={styles['card-field']}>
-        <b>Name:</b>
-        <p>{name || 'Not specified'}</p>
-      </div>
-
-      {properties.map(p => (
-        <div className={styles['card-field']}>
-          <p key={p.label}>{p.label}:</p>
-          <p key={p.value}>{p.value.slice(0, 20)}</p>
-        </div>
-      ))}
-      <button
-        onClick={() => onRemove(id)}
-        className={`${styles['close-btn']} ${styles['floating']}`}
-      >
-        x
-      </button>
-    </div>
-  )
-}
 
 const TextInput: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -182,7 +141,6 @@ export const CredentialOfferCustom = ({
       display,
     }
     setCredentialsToBeIssued(prevState => [...prevState, offerRequestDetails])
-
     handleResetOnboarding()
   }
 
