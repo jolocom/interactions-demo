@@ -16,17 +16,34 @@ import styles from './CredentialOfferCustom.module.css'
 interface ICardProps {
   id: number
   type: string
+  name: string
   properties: Array<Record<string, any>>
   onRemove: (id: number) => void
 }
 
-const Card: React.FC<ICardProps> = ({ id, type, properties, onRemove }) => {
+const Card: React.FC<ICardProps> = ({
+  id,
+  type,
+  name,
+  properties,
+  onRemove,
+}) => {
   return (
     <div className={styles['card-container']}>
-      <h3>{type}</h3>
-      {properties.length ? <b>Properties:</b> : null}
+      <div className={styles['card-field']}>
+        <b>Type:</b>
+        <p>{type}</p>
+      </div>
+      <div className={styles['card-field']}>
+        <b>Name:</b>
+        <p>{name || 'Not specified'}</p>
+      </div>
+
       {properties.map(p => (
-        <p key={p.label}>{p.label}</p>
+        <div className={styles['card-field']}>
+          <p key={p.label}>{p.label}:</p>
+          <p key={p.value}>{p.value.slice(0, 20)}</p>
+        </div>
       ))}
       <button
         onClick={() => onRemove(id)}
@@ -152,6 +169,7 @@ export const CredentialOfferCustom = ({
         return {
           path: [`$.${inp.fieldName}`],
           label: inp.label,
+          value: inp.value || 'Not specified',
         }
       }),
     }
@@ -290,6 +308,7 @@ export const CredentialOfferCustom = ({
                   type={c.type}
                   properties={c.display.properties}
                   onRemove={handleRemoveCredentials}
+                  name={c.name}
                 />
                 <Space />
               </div>
