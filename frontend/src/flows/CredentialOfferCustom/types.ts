@@ -3,3 +3,10 @@ export enum CredentialTypes {
   ProofOfDriverLicenceDemo = 'ProofOfDriverLicenceDemo',
   ProofOfTicketDemo = 'ProofOfTicketDemo',
 }
+
+export type TInput = {
+  name: string
+  fieldName: string
+  label: string
+  value: string
+}

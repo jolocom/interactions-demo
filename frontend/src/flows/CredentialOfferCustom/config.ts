@@ -4,14 +4,14 @@ export const documentInputs = [
   {
     name: 'givenName',
     label: 'Given Name',
-    value: '',
+    value: 'Karl',
     fieldName: 'givenName',
     placeholder: '(mandatory)',
   },
   {
     name: 'familyName',
     label: 'Family Name',
-    value: '',
+    value: 'Müller',
     fieldName: 'familyName',
     placeholder: '(mandatory)',
   },

@@ -27,7 +27,7 @@ export const Card: React.FC<ICardProps> = ({
       </div>
 
       {properties.map(p => (
-        <div className={styles['card-field']}>
+        <div key={p.key} className={styles['card-field']}>
           <p key={p.label}>{p.label}:</p>
           <p key={p.value}>{p.value.slice(0, 20)}</p>
         </div>

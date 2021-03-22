@@ -9,28 +9,11 @@ import { InteractionInput } from 'components/InteractionInput'
 
 import { generateString, lowercaseFirst } from './utils'
 import { documentInputs, documentTypes, renderAsForType } from './config'
-import { CredentialTypes } from './types'
+import { CredentialTypes, TInput } from './types'
 import { ClaimInput } from './ClaimInput'
 import { Card } from './Card'
 import styles from './CredentialOfferCustom.module.css'
-
-const TextInput: React.FC<{
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  value: string
-  name: string
-  placeholder?: string
-}> = ({ onChange, value, name, placeholder }) => (
-  <input
-    style={{
-      width: '100%',
-    }}
-    type="text"
-    name={name}
-    value={value}
-    onChange={onChange}
-    placeholder={placeholder}
-  />
-)
+import NewClaimInput from './NewClaimInput'
 
 export const CredentialOfferCustom = ({
   serviceAPI,
@@ -46,14 +29,7 @@ export const CredentialOfferCustom = ({
 
   const defaultInputs = documentTypes.includes(credType) ? documentInputs : []
 
-  const [inputs, setInputs] = useState<
-    Array<{
-      name: string
-      fieldName: string
-      label: string
-      value: string
-    }>
-  >(defaultInputs)
+  const [inputs, setInputs] = useState<Array<TInput>>(defaultInputs)
 
   const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
     Array<Record<string, any>>
@@ -196,7 +172,7 @@ export const CredentialOfferCustom = ({
           <Space />
           <Space />
           <h3>Claims</h3>
-          {inputs.map(({ fieldName, label, ...rest }) => (
+          {inputs.map(input => (
             <div
               style={{
                 paddingTop: '20px',
@@ -210,25 +186,20 @@ export const CredentialOfferCustom = ({
                   justifyContent: 'space-between',
                 }}
               >
-                <h4>{fieldName}</h4>
+                <h4>{input.label}</h4>
                 <button
-                  onClick={() => handleRemove(rest.name)}
+                  onClick={() => handleRemove(input.name)}
                   className={styles['close-btn']}
                 >
                   x
                 </button>
               </div>
-              <TextInput
-                {...rest}
-                placeholder="label"
-                value={label}
-                onChange={handleInputChange}
-              />
-              <TextInput {...rest} onChange={handleInputChange} />
+              {/* TODO: this is a terrible name */}
+              <NewClaimInput input={input} />
             </div>
           ))}
           <Space />
-          <div className={styles['field-section']}>
+          {/* <div className={styles['field-section']}>
             <ClaimInput
               label="New claim"
               claimKey={newField}
@@ -245,7 +216,7 @@ export const CredentialOfferCustom = ({
             >
               +
             </button>
-          </div>
+          </div> */}
           <InteractionBtn
             text="Add for issuance"
             onClick={handleAddIssuedCredential}
