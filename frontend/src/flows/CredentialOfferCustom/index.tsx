@@ -7,11 +7,12 @@ import { Space } from 'components/Space'
 import { InteractionBtn } from 'components/InteractionBtn'
 import { InteractionInput } from 'components/InteractionInput'
 
-import { documentInputs, documentTypes, renderAsForType } from './config'
-import { ClaimKeys, CredentialTypes, TInput } from './types'
+import { documentInputs, documentTypes } from './config'
+import { ClaimKeys, CredentialTypes, TInput, ICredential } from './types'
 import { Card } from './Card'
 import styles from './CredentialOfferCustom.module.css'
 import { ClaimDetails } from './ClaimDetails'
+import { getPreparedCredentials } from './utils'
 
 const NEW_CLAIM: TInput = {
   key: '',
@@ -33,7 +34,7 @@ export const CredentialOfferCustom = ({
   const [inputs, setInputs] = useState<Array<TInput>>(defaultInputs)
 
   const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
-    Array<Record<string, any>>
+    Array<ICredential>
   >([])
 
   const handleRemove = (name: string) => {
@@ -66,33 +67,21 @@ export const CredentialOfferCustom = ({
   }, [credType])
 
   const handleAddIssuedCredential = () => {
-    const claims: Record<string, string> = {}
-    const display = {
-      properties: inputs.map(inp => {
-        claims[inp.key] = inp.value
-        return {
-          path: [`$.${inp.key}`],
-          label: inp.label,
-          value: inp.value || 'Not specified',
-        }
-      }),
-    }
-    const offerRequestDetails = {
+    const credential = {
       id: Date.now(),
-      renderAs: renderAsForType[credType],
       name: credName,
       type: credType,
-      claims,
-      display,
+      inputs,
     }
-    setCredentialsToBeIssued(prevState => [...prevState, offerRequestDetails])
+    setCredentialsToBeIssued(prevState => [...prevState, credential])
     handleResetOnboarding()
   }
 
   const handleSubmit = async () => {
+    const credentials = credentialsToBeIssued.map(getPreparedCredentials)
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
       RpcRoutes.genericCredentialOffer,
-      credentialsToBeIssued,
+      credentials,
     )
     return resp
   }
@@ -121,6 +110,13 @@ export const CredentialOfferCustom = ({
   const handleAddNewClaim = () => {
     setInputs(prevState => [...prevState, NEW_CLAIM])
   }
+
+  const handleEditCredential = (id: number) => {
+    const editCredentials = credentialsToBeIssued.find(c => c.id === id)
+    console.log({ editCredentials })
+  }
+
+  console.log({ credentialsToBeIssued })
 
   return (
     <InteractionTemplate
@@ -198,13 +194,14 @@ export const CredentialOfferCustom = ({
               Add credentials to see it here
             </h5>
           ) : (
-            credentialsToBeIssued.map(c => (
-              <div key={c.id}>
+            credentialsToBeIssued.map(getPreparedCredentials).map(c => (
+              <div key={c.type}>
                 <Card
                   id={c.id}
                   type={c.type}
                   properties={c.display.properties}
                   onRemove={handleRemoveCredentials}
+                  onEdit={handleEditCredential}
                   name={c.name}
                 />
                 <Space />

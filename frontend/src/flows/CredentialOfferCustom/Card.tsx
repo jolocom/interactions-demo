@@ -7,6 +7,7 @@ interface ICardProps {
   name: string
   properties: Array<Record<string, any>>
   onRemove: (id: number) => void
+  onEdit: (id: number) => void
 }
 export const Card: React.FC<ICardProps> = ({
   id,
@@ -14,6 +15,7 @@ export const Card: React.FC<ICardProps> = ({
   name,
   properties,
   onRemove,
+  onEdit,
 }) => {
   return (
     <div className={styles['card-container']}>
@@ -37,6 +39,12 @@ export const Card: React.FC<ICardProps> = ({
         className={`${styles['close-btn']} ${styles['floating']}`}
       >
         x
+      </button>
+      <button
+        onClick={() => onEdit(id)}
+        className={`${styles['close-btn']} ${styles['floating']}`}
+      >
+        Edit
       </button>
     </div>
   )
