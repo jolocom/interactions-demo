@@ -94,7 +94,7 @@ export const CredentialOfferCustom = ({
   }
 
   const handleAddNewClaim = () => {
-    setInputs(prevState => [...prevState, NEW_CLAIM])
+    setInputs(prevState => [...prevState, { ...NEW_CLAIM }])
   }
   const handleEditCredential = (id: number) => {
     const editCredential = credentialsToBeIssued.find(c => c.id === id)
