@@ -92,7 +92,7 @@ export const CredentialOfferCustom = ({
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
   }
 
-  const handleRemoveCredentials = (id: number) => {
+  const handleRemoveCredential = (id: number) => {
     setCredentialsToBeIssued(prevState => prevState.filter(c => c.id !== id))
   }
 
@@ -112,11 +112,15 @@ export const CredentialOfferCustom = ({
   }
 
   const handleEditCredential = (id: number) => {
-    const editCredentials = credentialsToBeIssued.find(c => c.id === id)
-    console.log({ editCredentials })
+    const editCredential = credentialsToBeIssued.find(c => c.id === id)
+    if (editCredential !== undefined) {
+      const { id, type, name, inputs } = editCredential
+      setCredType(type)
+      setCredName(name)
+      setInputs(inputs)
+      handleRemoveCredential(id)
+    }
   }
-
-  console.log({ credentialsToBeIssued })
 
   return (
     <InteractionTemplate
@@ -200,7 +204,7 @@ export const CredentialOfferCustom = ({
                   id={c.id}
                   type={c.type}
                   properties={c.display.properties}
-                  onRemove={handleRemoveCredentials}
+                  onRemove={handleRemoveCredential}
                   onEdit={handleEditCredential}
                   name={c.name}
                 />
