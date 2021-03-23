@@ -1,21 +1,19 @@
 import React from 'react'
-import { TInput } from './types'
+import { ClaimKeys, TInput } from './types'
 import styles from './CredentialOfferCustom.module.css'
 
 const TextInput: React.FC<{
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
   value: string
-  name: string
   placeholder?: string
 }> = props => {
-  const { onChange, value, name, placeholder } = props
+  const { onChange, value, placeholder } = props
   return (
     <input
       style={{
         width: '90%',
       }}
       type="text"
-      name={name}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
@@ -25,38 +23,42 @@ const TextInput: React.FC<{
 
 interface INewClaimInput {
   input: TInput
+  onEdit: (key: string, claimKey: ClaimKeys, value: string) => void
 }
 
-export const NewClaimInput: React.FC<INewClaimInput> = ({ input }) => {
+export const ClaimDetails: React.FC<INewClaimInput> = ({ input, onEdit }) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: string,
+    claimKey: ClaimKeys,
+  ) => {
+    onEdit(key, claimKey, e.target.value)
+  }
+
   return (
     <div>
       <div className={styles['card-field']}>
         <p>key</p>
         <TextInput
-          name="Claim key"
-          value={input.fieldName}
-          onChange={e => console.log('claim key', e.target.value)}
+          value={input.key}
+          onChange={e => handleChange(e, input.key, 'key')}
         />
       </div>
       <div className={styles['card-field']}>
         <p>label</p>
         <TextInput
-          name="Claim label"
           value={input.label}
-          onChange={e => console.log('claim label', e.target.value)}
+          onChange={e => handleChange(e, input.key, 'label')}
         />
       </div>
       <div className={styles['card-field']}>
         <p>value</p>
 
         <TextInput
-          name="Claim value"
           value={input.value}
-          onChange={e => console.log('claim value', e.target.value)}
+          onChange={e => handleChange(e, input.key, 'value')}
         />
       </div>
     </div>
   )
 }
-
-export default NewClaimInput

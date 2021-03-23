@@ -7,13 +7,17 @@ import { Space } from 'components/Space'
 import { InteractionBtn } from 'components/InteractionBtn'
 import { InteractionInput } from 'components/InteractionInput'
 
-import { generateString, lowercaseFirst } from './utils'
 import { documentInputs, documentTypes, renderAsForType } from './config'
-import { CredentialTypes, TInput } from './types'
-import { ClaimInput } from './ClaimInput'
+import { ClaimKeys, CredentialTypes, TInput } from './types'
 import { Card } from './Card'
 import styles from './CredentialOfferCustom.module.css'
-import NewClaimInput from './NewClaimInput'
+import { ClaimDetails } from './ClaimDetails'
+
+const NEW_CLAIM: TInput = {
+  key: '',
+  label: '',
+  value: '',
+}
 
 export const CredentialOfferCustom = ({
   serviceAPI,
@@ -24,9 +28,6 @@ export const CredentialOfferCustom = ({
   const [credType, setCredType] = useState(
     CredentialTypes.ProofOfIdCredentialDemo,
   )
-  const [newField, setNewField] = useState('')
-  const [newFieldLabel, setNewFieldLabel] = useState('')
-
   const defaultInputs = documentTypes.includes(credType) ? documentInputs : []
 
   const [inputs, setInputs] = useState<Array<TInput>>(defaultInputs)
@@ -35,42 +36,10 @@ export const CredentialOfferCustom = ({
     Array<Record<string, any>>
   >([])
 
-  const handleCreateNewField = () => {
-    if (newField.length) {
-      const newFieldName = lowercaseFirst(newField.replace(' ', ''))
-      setInputs(prev => {
-        return [
-          ...prev,
-          {
-            name: generateString(),
-            value: '',
-            label: newFieldLabel,
-            fieldName: newFieldName,
-          },
-        ]
-      })
-      setNewField('')
-      setNewFieldLabel('')
-    }
-  }
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.persist()
-    setInputs(prev => {
-      const inputArray = [...prev]
-      const inputIndex = inputArray.findIndex(v => v.name === e.target.name)
-      const foundInput = inputArray[inputIndex]
-      foundInput.value = e.target.value
-      inputArray[inputIndex] = foundInput
-
-      return inputArray
-    })
-  }
-
   const handleRemove = (name: string) => {
     setInputs(prev => {
       const oldInputs = [...prev]
-      const filteredInputs = oldInputs.filter(v => v.name !== name)
+      const filteredInputs = oldInputs.filter(v => v.key !== name)
       return filteredInputs
     })
   }
@@ -82,14 +51,14 @@ export const CredentialOfferCustom = ({
 
   useEffect(() => {
     if (documentTypes.includes(credType)) {
-      if (!inputs.find(v => v.name === 'givenName'))
+      if (!inputs.find(v => v.key === 'givenName'))
         setInputs(prev => [...documentInputs, ...prev])
     } else {
-      const documentNames = documentInputs.map(v => v.name)
+      const documentNames = documentInputs.map(v => v.key)
       setInputs(prev => {
         const oldInputs = [...prev]
         const filteredInputs = oldInputs.filter(
-          v => !documentNames.includes(v.name),
+          v => !documentNames.includes(v.key),
         )
         return filteredInputs
       })
@@ -100,9 +69,9 @@ export const CredentialOfferCustom = ({
     const claims: Record<string, string> = {}
     const display = {
       properties: inputs.map(inp => {
-        claims[inp.fieldName] = inp.value
+        claims[inp.key] = inp.value
         return {
-          path: [`$.${inp.fieldName}`],
+          path: [`$.${inp.key}`],
           label: inp.label,
           value: inp.value || 'Not specified',
         }
@@ -136,6 +105,21 @@ export const CredentialOfferCustom = ({
 
   const handleRemoveCredentials = (id: number) => {
     setCredentialsToBeIssued(prevState => prevState.filter(c => c.id !== id))
+  }
+
+  const handleInputEdit = (key: string, claimKey: ClaimKeys, value: string) => {
+    setInputs(prevState => {
+      return prevState.map(i => {
+        if (i.key === key) {
+          i[claimKey] = value
+        }
+        return i
+      })
+    })
+  }
+
+  const handleAddNewClaim = () => {
+    setInputs(prevState => [...prevState, NEW_CLAIM])
   }
 
   return (
@@ -188,35 +172,19 @@ export const CredentialOfferCustom = ({
               >
                 <h4>{input.label}</h4>
                 <button
-                  onClick={() => handleRemove(input.name)}
+                  onClick={() => handleRemove(input.key)}
                   className={styles['close-btn']}
                 >
                   x
                 </button>
               </div>
-              {/* TODO: this is a terrible name */}
-              <NewClaimInput input={input} />
+              <ClaimDetails input={input} onEdit={handleInputEdit} />
             </div>
           ))}
           <Space />
-          {/* <div className={styles['field-section']}>
-            <ClaimInput
-              label="New claim"
-              claimKey={newField}
-              claimLabel={newFieldLabel}
-              keyPlaceholder="e.g. birthDate"
-              labelPlaceholder="e.g. Date of Birth"
-              setClaimKey={setNewField}
-              setClaimLabel={setNewFieldLabel}
-            />
-            <button
-              className={styles['plus-btn']}
-              disabled={!newField.length}
-              onClick={handleCreateNewField}
-            >
-              +
-            </button>
-          </div> */}
+          <button className={styles['plus-btn']} onClick={handleAddNewClaim}>
+            +
+          </button>
           <InteractionBtn
             text="Add for issuance"
             onClick={handleAddIssuedCredential}

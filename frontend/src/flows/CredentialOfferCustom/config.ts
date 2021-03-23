@@ -2,25 +2,22 @@ import { CredentialTypes } from "./types"
 
 export const documentInputs = [
   {
-    name: 'givenName',
     label: 'Given Name',
     value: 'Karl',
-    fieldName: 'givenName',
+    key: 'givenName',
     placeholder: '(mandatory)',
   },
   {
-    name: 'familyName',
     label: 'Family Name',
     value: 'Müller',
-    fieldName: 'familyName',
+    key: 'familyName',
     placeholder: '(mandatory)',
   },
   {
-    name: 'photo',
     label: 'Photograph',
     value:
       'https://i.pinimg.com/564x/64/4d/dc/644ddca56c43e4b01af5aec27e010feb.jpg',
-    fieldName: 'photo',
+    key: 'photo',
     placeholder: '(mandatory)',
   },
 ]

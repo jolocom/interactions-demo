@@ -5,8 +5,8 @@ export enum CredentialTypes {
 }
 
 export type TInput = {
-  name: string
-  fieldName: string
+  key: string
   label: string
   value: string
 }
+export type ClaimKeys = keyof TInput
