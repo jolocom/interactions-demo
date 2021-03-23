@@ -29,15 +29,18 @@ export const CredentialOfferCustom = ({
   const [credType, setCredType] = useState(
     CredentialTypes.ProofOfIdCredentialDemo,
   )
-
   const [inputs, setInputs] = useState<Array<TInput>>([])
 
-  useEffect(() => {
+  const handleSetInitialInputs = () => {
     setInputs(s => {
       if (documentTypes.includes(credType))
         return JSON.parse(JSON.stringify(documentInputs))
       else return []
     })
+  }
+
+  useEffect(() => {
+    handleSetInitialInputs()
   }, [credType])
 
   const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
@@ -80,6 +83,7 @@ export const CredentialOfferCustom = ({
   const handleResetOnboarding = () => {
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
     setCredName('')
+    handleSetInitialInputs()
   }
 
   const handleInputEdit = (key: string, claimKey: ClaimKeys, value: string) => {
