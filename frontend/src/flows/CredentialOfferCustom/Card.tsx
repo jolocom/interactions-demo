@@ -1,3 +1,4 @@
+import { Space } from 'components/Space'
 import React from 'react'
 import styles from './CredentialOfferCustom.module.css'
 
@@ -34,18 +35,11 @@ export const Card: React.FC<ICardProps> = ({
           <p key={p.value}>{p.value.slice(0, 20)}</p>
         </div>
       ))}
-      <button
-        onClick={() => onRemove(id)}
-        className={`${styles['close-btn']} ${styles['floating']}`}
-      >
-        x
-      </button>
-      <button
-        onClick={() => onEdit(id)}
-        className={`${styles['close-btn']} ${styles['floating']}`}
-      >
-        Edit
-      </button>
+      <Space />
+      <div className={styles['btns-container']}>
+        <button onClick={() => onRemove(id)}>Remove</button>
+        <button onClick={() => onEdit(id)}>Edit</button>
+      </div>
     </div>
   )
 }
