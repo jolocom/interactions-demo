@@ -29,9 +29,16 @@ export const CredentialOfferCustom = ({
   const [credType, setCredType] = useState(
     CredentialTypes.ProofOfIdCredentialDemo,
   )
-  const defaultInputs = documentTypes.includes(credType) ? documentInputs : []
 
-  const [inputs, setInputs] = useState<Array<TInput>>(defaultInputs)
+  const [inputs, setInputs] = useState<Array<TInput>>([])
+
+  useEffect(() => {
+    setInputs(s => {
+      if (documentTypes.includes(credType))
+        return JSON.parse(JSON.stringify(documentInputs))
+      else return []
+    })
+  }, [credType])
 
   const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
     Array<ICredential>
@@ -49,22 +56,6 @@ export const CredentialOfferCustom = ({
     const selected = e.target.value as CredentialTypes
     setCredType(selected)
   }
-
-  useEffect(() => {
-    if (documentTypes.includes(credType)) {
-      if (!inputs.find(v => v.key === 'givenName'))
-        setInputs(prev => [...documentInputs, ...prev])
-    } else {
-      const documentNames = documentInputs.map(v => v.key)
-      setInputs(prev => {
-        const oldInputs = [...prev]
-        const filteredInputs = oldInputs.filter(
-          v => !documentNames.includes(v.key),
-        )
-        return filteredInputs
-      })
-    }
-  }, [credType])
 
   const handleAddIssuedCredential = () => {
     const credential = {
@@ -87,13 +78,8 @@ export const CredentialOfferCustom = ({
   }
 
   const handleResetOnboarding = () => {
-    setInputs(defaultInputs)
-    setCredName('')
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
-  }
-
-  const handleRemoveCredential = (id: number) => {
-    setCredentialsToBeIssued(prevState => prevState.filter(c => c.id !== id))
+    setCredName('')
   }
 
   const handleInputEdit = (key: string, claimKey: ClaimKeys, value: string) => {
@@ -110,7 +96,6 @@ export const CredentialOfferCustom = ({
   const handleAddNewClaim = () => {
     setInputs(prevState => [...prevState, NEW_CLAIM])
   }
-
   const handleEditCredential = (id: number) => {
     const editCredential = credentialsToBeIssued.find(c => c.id === id)
     if (editCredential !== undefined) {
@@ -120,6 +105,9 @@ export const CredentialOfferCustom = ({
       setInputs(inputs)
       handleRemoveCredential(id)
     }
+  }
+  const handleRemoveCredential = (id: number) => {
+    setCredentialsToBeIssued(prevState => prevState.filter(c => c.id !== id))
   }
 
   return (
@@ -137,7 +125,7 @@ export const CredentialOfferCustom = ({
           <div>
             <h3>Credential type</h3>
             <Space />
-            <select onChange={handleTypeChange}>
+            <select value={credType} onChange={handleTypeChange}>
               {Object.values(CredentialTypes).map(type => (
                 <option value={type}>{type}</option>
               ))}
