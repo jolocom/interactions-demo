@@ -7,7 +7,7 @@ import { Space } from 'components/Space'
 import { InteractionBtn } from 'components/InteractionBtn'
 import { InteractionInput } from 'components/InteractionInput'
 
-import { documentInputs, documentTypes } from './config'
+import { documentInputs, documentTypes, otherInputs } from './config'
 import { ClaimKeys, CredentialTypes, TInput, ICredential } from './types'
 import { Card } from './Card'
 import styles from './CredentialOfferCustom.module.css'
@@ -31,17 +31,17 @@ export const CredentialOfferCustom = ({
   )
   const [inputs, setInputs] = useState<Array<TInput>>([])
 
-  const handleSetInitialInputs = () => {
+  const handleSetInitialInputs = (type: CredentialTypes) => {
     setInputs(s => {
-      if (documentTypes.includes(credType))
+      if (documentTypes.includes(type))
         return JSON.parse(JSON.stringify(documentInputs))
-      else return []
+      else return JSON.parse(JSON.stringify(otherInputs))
     })
   }
 
   useEffect(() => {
-    handleSetInitialInputs()
-  }, [credType])
+    handleSetInitialInputs(credType)
+  }, [])
 
   const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
     Array<ICredential>
@@ -58,6 +58,7 @@ export const CredentialOfferCustom = ({
   const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = e.target.value as CredentialTypes
     setCredType(selected)
+    handleSetInitialInputs(selected)
   }
 
   const handleAddIssuedCredential = () => {
@@ -83,7 +84,7 @@ export const CredentialOfferCustom = ({
   const handleResetOnboarding = () => {
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
     setCredName('')
-    handleSetInitialInputs()
+    handleSetInitialInputs(CredentialTypes.ProofOfIdCredentialDemo)
   }
 
   const handleInputEdit = (key: string, claimKey: ClaimKeys, value: string) => {

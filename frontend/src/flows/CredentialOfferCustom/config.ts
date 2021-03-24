@@ -22,6 +22,15 @@ export const documentInputs = [
   },
 ]
 
+export const otherInputs = [
+  {
+    label: 'Place',
+    value: 'Berlin, Germany',
+    key: 'place',
+    placeholder: '(mandatory)',
+  },
+]
+
 export const documentTypes = [
   CredentialTypes.ProofOfDriverLicenceDemo,
   CredentialTypes.ProofOfIdCredentialDemo,
