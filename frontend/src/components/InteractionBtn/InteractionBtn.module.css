@@ -1,0 +1,20 @@
+.btn-container {
+  display: flex;
+  align-items: 'space-around';
+  background-color: rgb(148, 47, 81);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.btn-icon {
+  height: 1.25rem;
+  width: 1.25rem;
+  margin-right: 0.5rem;
+  flex: 1;
+  width: '100%';
+}

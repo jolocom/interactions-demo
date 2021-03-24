@@ -7,7 +7,6 @@ import { CredentialOfferFlow } from '@jolocom/sdk/js/interactionManager/credenti
 // @ts-ignore
 global.fetch = fetch
 
-
 const conn1Name = 'alice'
 let alice: Agent
 let serviceAPI: JolocomWebServiceClient
@@ -35,7 +34,7 @@ describe('Credential Offer Interaction', () => {
       name: 'Test Credential',
       claims: {
         testValue: false,
-        otherVal: "empty"
+        otherVal: 'empty',
       },
       renderAs: 'Document',
       display: {
@@ -47,13 +46,13 @@ describe('Credential Offer Interaction', () => {
           {
             path: ['$.otherVal'],
             label: 'Another property',
-          }
-        ]
-      }
+          },
+        ],
+      },
     }
     const credOffer = await serviceAPI.sendRPC(
       'genericCredentialOffer',
-      credOfferRequestDescription
+      credOfferRequestDescription,
     )
 
     expect(credOffer.jwt).toBeDefined()
@@ -67,7 +66,7 @@ describe('Credential Offer Interaction', () => {
     expect(offers[0].properties).toHaveLength(2)
     const props = offers[0].properties
     expect(props && props[0].label).toEqual(
-      credOfferRequestDescription.display.properties[0].label
+      credOfferRequestDescription.display.properties[0].label,
     )
 
     const offerResp = await interxn.createCredentialOfferResponseToken([
@@ -81,7 +80,7 @@ describe('Credential Offer Interaction', () => {
     expect(issuance).toHaveLength(1)
     expect(issuance[0].validationErrors).toMatchObject({
       invalidIssuer: false,
-      invalidSubject: false
+      invalidSubject: false,
     })
 
     const offerDisp = flow.getOfferDisplay()

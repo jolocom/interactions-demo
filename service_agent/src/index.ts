@@ -9,10 +9,7 @@ import { JolocomSDK } from '@jolocom/sdk'
 // @ts-ignore
 import { FilePasswordStore } from '@jolocom/sdk-password-store-filesystem'
 import { JolocomTypeormStorage } from '@jolocom/sdk-storage-typeorm'
-import {
-  CredentialRenderTypes,
-  CredentialOffer,
-} from '@jolocom/protocol-ts'
+import { CredentialRenderTypes, CredentialOffer } from '@jolocom/protocol-ts'
 
 import { claimsMetadata } from '@jolocom/protocol-ts'
 import { constraintFunctions } from 'jolocom-lib/js/interactionTokens/credentialRequest'
@@ -39,6 +36,9 @@ enum CredTypes {
   DemoCred = 'DemoCred',
   DemoIdCard = 'DemoIdCard',
   DemoDriversLicense = 'DemoDriversLicense',
+  ProofOfIdCredentialDemo = 'ProofOfIdCredentialDemo',
+  ProofOfDriverLicenceDemo = 'ProofOfDriverLicenceDemo',
+  ProofOfTicketDemo = 'ProofOfTicketDemo',
 }
 
 const genericMetadata = (type: CredTypes, name: string) => ({
@@ -65,7 +65,7 @@ const genericOffer = (type: CredTypes, color?: string): CredentialOffer => {
     },
     credential: {
       schema: 'https://schema.org/EducationalOccupationalCredential',
-    }
+    },
   }
 }
 
@@ -81,6 +81,18 @@ const credMetadata = {
   [CredTypes.DemoDriversLicense]: genericMetadata(
     CredTypes.DemoDriversLicense,
     "Demonstration Driver's License Credential",
+  ),
+  [CredTypes.ProofOfIdCredentialDemo]: genericMetadata(
+    CredTypes.ProofOfIdCredentialDemo,
+    'ProofOfIdCredentialDemo',
+  ),
+  [CredTypes.ProofOfDriverLicenceDemo]: genericMetadata(
+    CredTypes.ProofOfDriverLicenceDemo,
+    'ProofOfDriverLicenceDemo',
+  ),
+  [CredTypes.ProofOfTicketDemo]: genericMetadata(
+    CredTypes.ProofOfTicketDemo,
+    'ProofOfTicketDemo',
   ),
 }
 
@@ -128,10 +140,14 @@ export const init = async () => {
   })
   await server.register(HAPIWebSocket)
 
-  server.log(['info'], `Jolocom SDK with default DIDMethod did:${sdk.didMethods.getDefault().prefix}`)
+  server.log(
+    ['info'],
+    `Jolocom SDK with default DIDMethod did:${
+      sdk.didMethods.getDefault().prefix
+    }`,
+  )
   server.log(['info'], `Initializing Agent...`)
   const jolo = await sdk.initAgent({ passwordStore: passwordStore })
-
 
   server.log(['info'], `Agent ready with DID ${jolo.idw.did}`)
 

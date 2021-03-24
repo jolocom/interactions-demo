@@ -1,9 +1,14 @@
 import React, { useState } from 'react'
 import { JolocomWebServiceClient } from '@jolocom/web-service-client'
-import { InteractionButton } from './interactionButton'
-import { RpcRoutes } from '../config'
 
-export const EstablishChannelContainer = ({
+import { RpcRoutes } from 'config'
+import { InteractionBtn } from 'components/InteractionBtn'
+import { InteractionQR } from 'components/InteractionQR'
+import { InteractionInput } from 'components/InteractionInput'
+
+import styles from './EstablishChannel.module.css'
+
+export const EstablishChannel = ({
   serviceAPI,
   jwtCommand,
 }: {
@@ -63,93 +68,41 @@ export const EstablishChannelContainer = ({
   }
 
   return (
-    <div
-      style={{
-        background: '#ffefdf',
-        marginTop: '70px',
-        marginBottom: '70px',
-        marginLeft: '10px',
-        marginRight: '10px',
-        padding: '30px',
-        boxShadow: '0px 0px 80px 2px gray',
-        borderRadius: '40px',
-      }}
-    >
+    <div className={styles['container']}>
       <h2>RPC Encrypt/Decrypt Demo</h2>
-      <div
-        style={{
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px',
-        }}
-      >
+      <div className={styles['body-container']}>
         {encryptReady ? (
           <>
-            <div style={{ paddingTop: '20px', width: '100%' }}>
-              <h4>Input Data</h4>
-              <input
-                style={{
-                  margin: '10px',
-                  width: '100%',
-                  maxWidth: '500px',
-                }}
-                type="text"
-                name="description"
-                value={encryptInput}
-                onChange={e => setEncryptInput(e.target.value)}
-              />
-            </div>
-            <InteractionButton
+            <InteractionInput
+              label="Input Data"
+              value={encryptInput}
+              setValue={setEncryptInput}
+              name="description"
+              type="text"
+            />
+            <InteractionBtn
               onClick={onClickEncrypt}
               text={'Request Encryption'}
             />
-            <InteractionButton
+            <InteractionBtn
               onClick={onClickDecrypt}
               text={'Request Decryption'}
             />
           </>
         ) : (
-          <InteractionButton onClick={onClickStart} text={'Start RPC Demo'} />
+          <InteractionBtn onClick={onClickStart} text={'Start RPC Demo'} />
         )}
 
-        {err ? (
-          <b>Error</b>
-        ) : (
-          jwt && (
-            <div>
-              <div
-                style={{
-                  wordWrap: 'break-word',
-                  maxWidth: '50vw',
-                  whiteSpace: 'pre-wrap',
-                  fontFamily: 'monospace',
-                }}
-              >
-                {jwtCommand} {jwt}
-              </div>
-            </div>
-          )
-        )}
+        {err && <b>Error</b>}
+
+        <InteractionQR jwt={jwt ? `${jwtCommand} ${jwt}` : undefined} />
 
         {!err && qr && <img src={qr} />}
 
         {!!encryptOutput.length && (
           <>
             <h4>Output Data</h4>
-            <div
-              style={{
-                border: '1px solid black',
-                padding: '20px',
-                backgroundColor: 'white',
-                width: '500px',
-                textAlign: 'center',
-                overflowWrap: 'break-word',
-                borderRadius: '10px',
-              }}
-            >
+            <div className={styles['output-container']}>
               <i>{encryptOutput}</i>
             </div>
           </>
