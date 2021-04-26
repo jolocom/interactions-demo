@@ -277,8 +277,6 @@ export const init = async () => {
         req: { types: string[]; invalid?: string[] },
         { createInteractionCallbackURL, wrapJWT },
       ) => {
-        console.log({req});
-        
         const filteredOfferedCreds = req.types.reduce((acc, t) => {
           const cred = offeredCredentials.find((o) => o.type == t)
           if (cred) return [...acc, cred]
@@ -344,9 +342,6 @@ export const init = async () => {
         { createInteractionCallbackURL, wrapJWT },
       ) => {
         const credTypes = req.types.filter((t) => !!requestableCredentials[t])
-
-        console.log({credTypes});
-        
 
         if (credTypes.length === 0)
           throw new Error(
