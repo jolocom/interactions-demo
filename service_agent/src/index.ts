@@ -42,7 +42,7 @@ enum CredTypes {
 }
 
 const genericMetadata = (type: CredTypes, name: string) => ({
-  type: ['Credential', type],
+  type: ['VerifiableCredential', type],
   name,
   context: [
     {
@@ -277,6 +277,8 @@ export const init = async () => {
         req: { types: string[]; invalid?: string[] },
         { createInteractionCallbackURL, wrapJWT },
       ) => {
+        console.log({req});
+        
         const filteredOfferedCreds = req.types.reduce((acc, t) => {
           const cred = offeredCredentials.find((o) => o.type == t)
           if (cred) return [...acc, cred]
@@ -343,6 +345,9 @@ export const init = async () => {
       ) => {
         const credTypes = req.types.filter((t) => !!requestableCredentials[t])
 
+        console.log({credTypes});
+        
+
         if (credTypes.length === 0)
           throw new Error(
             'no credential types matching provided "types" parameter',
@@ -360,6 +365,8 @@ export const init = async () => {
             metadata: requestableCredentials[credentialType],
           })
         })
+        console.log({credentialRequirements});
+        
         return wrapJWT(
           await jolo.credRequestToken({
             callbackURL,
