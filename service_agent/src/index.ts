@@ -365,8 +365,6 @@ export const init = async () => {
             metadata: requestableCredentials[credentialType],
           })
         })
-        console.log({credentialRequirements});
-        
         return wrapJWT(
           await jolo.credRequestToken({
             callbackURL,
