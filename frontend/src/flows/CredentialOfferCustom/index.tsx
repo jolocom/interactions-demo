@@ -20,12 +20,14 @@ const NEW_CLAIM: TInput = {
   value: '',
 }
 
+const DEFAULT_NAME = 'Jolocom credential'
+
 export const CredentialOfferCustom = ({
   serviceAPI,
 }: {
   serviceAPI: JolocomWebServiceClient
 }) => {
-  const [credName, setCredName] = useState('')
+  const [credName, setCredName] = useState(DEFAULT_NAME)
   const [credType, setCredType] = useState(
     CredentialTypes.ProofOfIdCredentialDemo,
   )
@@ -83,7 +85,7 @@ export const CredentialOfferCustom = ({
 
   const handleResetOnboarding = () => {
     setCredType(CredentialTypes.ProofOfIdCredentialDemo)
-    setCredName('')
+    setCredName(DEFAULT_NAME)
     handleSetInitialInputs(CredentialTypes.ProofOfIdCredentialDemo)
   }
 

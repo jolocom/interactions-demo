@@ -42,7 +42,7 @@ enum CredTypes {
 }
 
 const genericMetadata = (type: CredTypes, name: string) => ({
-  type: ['Credential', type],
+  type: ['VerifiableCredential', type],
   name,
   context: [
     {
