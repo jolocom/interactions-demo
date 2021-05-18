@@ -1,8 +1,12 @@
 # Docker Jolocom Interactions Demo
 
+A hosted version of this demo is available at https://interxns.jolocom.io
+
 ## Development Instructions
 
-NOTE: the docker-compose.yml provided is not suitable for development.
+The docker-compose.yml provided is not suitable for development purposes,
+but rather for deployment. For development please run the components manually as
+described below
 
 ### Service Agent (Backend)
 This requires an LTS version of Node: 10 or 12 or 14
@@ -48,6 +52,6 @@ variable inside `docker-compose.yml` to a value that the mobile phone can
 access, probably the LAN IP address of the computer running the `service_agent`,
 assuming the test SmartWallet is on the same LAN
 
-Also note that the SmartWallet release build require HTTP**S** connections, and cannot use
+Also note that the SmartWallet release builds require HTTP**S** connections, and cannot use
 plain HTTP. To use this demo without SSL certificates please use a **staging**
-build of the SmartWallet on Android.
+build of the SmartWallet on Android, available for download here: https://jolocom.io/wp-content/uploads/smartwallet/smartwallet-staging-1.11.1.apk
