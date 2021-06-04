@@ -20,6 +20,7 @@ const App: React.FunctionComponent<AppProps> = ({ serviceAPI, jwtCommand }) => {
   const [availableCredTypes, setAvailableCredTypes] = useState<string[]>([])
   const [requestableCredTypes, setRequestableCredTypes] = useState<string[]>([])
   useEffect(() => {
+    serviceAPI.connectWs()
     serviceAPI
       .sendRPC(RpcRoutes.getCredentialTypes)
       .then((credTypes: string[]) => {

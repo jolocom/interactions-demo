@@ -1343,10 +1343,10 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@jolocom/web-service-client@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@jolocom/web-service-client/-/web-service-client-1.0.0.tgz#2da8d162ac4b08a4e7820cb1c30e17bb7e41342a"
-  integrity sha512-jAVsBct+dwM9XTyLg6Ihk1b5h6gr09qIQeBK3d4AyfE6zAbAmfXLV2uM00OQtMbvzwNUYpM/MeNzoKy1PFdGIA==
+"@jolocom/web-service-client@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@jolocom/web-service-client/-/web-service-client-1.0.1.tgz#7b4c1c2f1245b7778c71e83deaa96b96e8e2b0bd"
+  integrity sha512-VvWQxpnwyzO9DySFww3JW2tAi5o3MXED0NBJLZGopPH0nOoYo6XNgltm0GLS9nDKoVa0WearV9XZL+xZCuisuA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
