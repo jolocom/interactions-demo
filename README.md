@@ -1,4 +1,6 @@
 # Docker Jolocom Interactions Demo
+[![chat on gitter](https://img.shields.io/gitter/room/jolocom/jolocom-sdk?style=flat-square)](https://gitter.im/jolocom/jolocom-sdk)
+
 This is a demo of all interactions supported by the
 [JolocomSDK](https://github.com/jolocom/jolocom-sdk). There is a React based
 frontend, and a Hapi based backend integrated with the JolocomSDK. It is meant
