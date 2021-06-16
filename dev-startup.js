@@ -58,3 +58,8 @@ const frontendAppProcess = startProcess(process.cwd() + '/frontend', 'REACT_APP_
 
 frontendAppProcess.stdout.pipe(process.stdout);
 frontendAppProcess.stderr.pipe(process.stderr);
+
+process.on('SIGINT', () => {
+  process.kill(-backendAppProcess.pid)
+  process.kill(-frontendAppProcess.pid)
+})
