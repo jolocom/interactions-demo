@@ -60,6 +60,6 @@ frontendAppProcess.stdout.pipe(process.stdout);
 frontendAppProcess.stderr.pipe(process.stderr);
 
 process.on('SIGINT', () => {
-  process.kill(-backendAppProcess.pid)
-  process.kill(-frontendAppProcess.pid)
-})
+  process.kill(-backendAppProcess.pid);
+  process.kill(-frontendAppProcess.pid);
+});
