@@ -3,12 +3,12 @@ const minimist = require('minimist');
 const os = require('os');
 
 const PROCESS_OPTIONS = {
-  stdio: 'inherit',
+  stdio: 'pipe',
   shell: true,
   detached: true
 }
 
-let args = minimist(process.argv.slice(2), {
+const args = minimist(process.argv.slice(2), {
   string: ["ip_address"]
 })
 
@@ -34,23 +34,27 @@ const guessIp = () => {
   return interfaceInfo ? interfaceInfo.address : null;
 }
 
-const ip_address = args.ip_address ? args.ip_address : guessIp();
+const ipAddress = args.ip_address ? args.ip_address : guessIp();
 
-if (!ip_address) {
+if (!ipAddress) {
   throw new Error('please specify ip_address parameter');
 }
 
-const backend_dir = process.cwd() + "/service_agent";
-const frontend_dir = process.cwd() + "/frontend";
-
-const start = (cwd, env_var) => spawn('npm', ['run', 'start'], {
+const startProcess = (cwd, envVar) => spawn('npm', ['run', 'start'], {
   ...PROCESS_OPTIONS,
   cwd,
   env: {
     ...process.env,
-    [env_var]: `${ip_address}:9000`
+    [envVar]: `${ipAddress}:9000`
   },
 })
 
-start(backend_dir, 'SERVICE_HOSTPORT');
-start(frontend_dir, 'REACT_APP_SERVICE_HOSTPORT');
+const backendAppProcess = startProcess(process.cwd() + '/service_agent', 'SERVICE_HOSTPORT');
+
+backendAppProcess.stdout.pipe(process.stdout);
+backendAppProcess.stderr.pipe(process.stderr);
+
+const frontendAppProcess = startProcess(process.cwd() + '/frontend', 'REACT_APP_SERVICE_HOSTPORT');
+
+frontendAppProcess.stdout.pipe(process.stdout);
+frontendAppProcess.stderr.pipe(process.stderr);
