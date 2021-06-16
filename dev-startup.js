@@ -40,24 +40,24 @@ if (!ipAddress) {
   throw new Error('please specify ip_address parameter');
 }
 
-const startProcess = (cwd, envVar) => spawn('npm', ['run', 'start'], {
-  ...PROCESS_OPTIONS,
-  cwd,
-  env: {
-    ...process.env,
-    [envVar]: `${ipAddress}:9000`
-  },
-})
+const createChildProcess = (cwd, envVar) => {
+  const childProcess = spawn('npm', ['run', 'start'], {
+    ...PROCESS_OPTIONS,
+    cwd,
+    env: {
+      ...process.env,
+      [envVar]: `${ipAddress}:9000`
+    },
+  });
 
-const backendAppProcess = startProcess(process.cwd() + '/service_agent', 'SERVICE_HOSTPORT');
+  childProcess.stdout.pipe(process.stdout);
+  childProcess.stderr.pipe(process.stderr);
 
-backendAppProcess.stdout.pipe(process.stdout);
-backendAppProcess.stderr.pipe(process.stderr);
+  return childProcess;
+}
 
-const frontendAppProcess = startProcess(process.cwd() + '/frontend', 'REACT_APP_SERVICE_HOSTPORT');
-
-frontendAppProcess.stdout.pipe(process.stdout);
-frontendAppProcess.stderr.pipe(process.stderr);
+const backendAppProcess = createChildProcess(process.cwd() + '/service_agent', 'SERVICE_HOSTPORT');
+const frontendAppProcess = createChildProcess(process.cwd() + '/frontend', 'REACT_APP_SERVICE_HOSTPORT');
 
 process.on('SIGINT', () => {
   process.kill(-backendAppProcess.pid);
