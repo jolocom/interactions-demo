@@ -1,49 +1,65 @@
-const {spawn, execSync} = require('child_process');
+const { spawn } = require('child_process');
+const minimist = require('minimist');
+const os = require('os');
 
 const PROCESS_OPTIONS = {
-  stdio: 'inherit',
+  stdio: 'pipe',
   shell: true,
   detached: true
 }
 
-let args = require('minimist')(process.argv.slice(2), {
+const args = minimist(process.argv.slice(2), {
   string: ["ip_address"]
 })
 
+const printHelp = () => {
+  console.log("dev-startup usage");
+  console.log("");
+  console.log("--help                      prints help");
+  console.log("--ip_address                ip_address used to start service_agent and frontend");
+}
+
 if(args.help) {
-  printHelp()
-} else {
-  let ip_address;
-  if(process.platform === 'darwin') {
-    ip_address = execSync(`ipconfig getifaddr en0`).toString();
-  } else {
-    ip_address = args.ip_address
-  }
+  printHelp();
 
-  if(!ip_address) {
-    throw new Error('please specify ip_address parameter')
-  }
+  return;
+}
 
-  const backend_dir = process.cwd() + "/service_agent";
-  const frontend_dir = process.cwd() + "/frontend";
+const guessIp = () => {
+  const interfaceInfo = Object.values(os.networkInterfaces())
+    .flat()
+    .find(i => !i.internal && i.family === 'IPv4')
+  ;
 
-  const start = (cwd, env_var) => spawn('npm', ['run', 'start'], {
+  return interfaceInfo ? interfaceInfo.address : null;
+}
+
+const ipAddress = args.ip_address ? args.ip_address : guessIp();
+
+if (!ipAddress) {
+  throw new Error('please specify ip_address parameter');
+}
+
+const createChildProcess = (cwd, envVar) => {
+  const childProcess = spawn('npm', ['run', 'start'], {
     ...PROCESS_OPTIONS,
     cwd,
     env: {
       ...process.env,
-      [env_var]: `${ip_address}:9000`
+      [envVar]: `${ipAddress}:9000`
     },
-  })
+  });
 
-  start(backend_dir, 'SERVICE_HOSTPORT');
-  start(frontend_dir, 'REACT_APP_SERVICE_HOSTPORT');
+  childProcess.stdout.pipe(process.stdout);
+  childProcess.stderr.pipe(process.stderr);
 
+  return childProcess;
 }
 
-const printHelp = () => {
-	console.log("dev-startup usage");
-	console.log("");
-	console.log("--help                      prints help");
-	console.log("--ip_address                ip_address used to start service_agent and frontend");
-}
+const backendAppProcess = createChildProcess(process.cwd() + '/service_agent', 'SERVICE_HOSTPORT');
+const frontendAppProcess = createChildProcess(process.cwd() + '/frontend', 'REACT_APP_SERVICE_HOSTPORT');
+
+process.on('SIGINT', () => {
+  process.kill(-backendAppProcess.pid);
+  process.kill(-frontendAppProcess.pid);
+});
