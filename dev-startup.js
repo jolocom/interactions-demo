@@ -17,6 +17,7 @@ const printHelp = () => {
   console.log("");
   console.log("--help                      prints help");
   console.log("--ip_address                ip_address used to start service_agent and frontend");
+  console.log("--debug                     start service_agent in debug mode");
 }
 
 if(args.help) {
@@ -40,8 +41,8 @@ if (!ipAddress) {
   throw new Error('please specify ip_address parameter');
 }
 
-const createChildProcess = (cwd, envVar) => {
-  const childProcess = spawn('npm', ['run', 'start'], {
+const createChildProcess = (cwd, envVar, opt) => {
+  const childProcess = spawn('npm', ['run', opt], {
     ...PROCESS_OPTIONS,
     cwd,
     env: {
@@ -56,8 +57,16 @@ const createChildProcess = (cwd, envVar) => {
   return childProcess;
 }
 
-const backendAppProcess = createChildProcess(process.cwd() + '/service_agent', 'SERVICE_HOSTPORT');
-const frontendAppProcess = createChildProcess(process.cwd() + '/frontend', 'REACT_APP_SERVICE_HOSTPORT');
+const backendAppProcess = createChildProcess(
+  process.cwd() + '/service_agent',
+  'SERVICE_HOSTPORT',
+  args.debug ? 'start:debug' : 'start'
+);
+const frontendAppProcess = createChildProcess(
+  process.cwd() + '/frontend',
+  'REACT_APP_SERVICE_HOSTPORT',
+  'start'
+);
 
 process.on('SIGINT', () => {
   process.kill(-backendAppProcess.pid);
