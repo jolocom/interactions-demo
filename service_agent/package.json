@@ -1,6 +1,6 @@
 {
   "name": "jolocom-demo-backend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "index.ts",
   "author": "Jolocom Dev <dev@jolocom.io>",
   "license": "MIT",
@@ -38,7 +38,7 @@
     "eslint": "^7.14.0",
     "hapi-jolocom": "^2.0.0-rc4",
     "hapi-plugin-websocket": "^2.3.0",
-    "jolocom-lib": "^5.2.0-rc0",
+    "jolocom-lib": "^5.2.1",
     "node-base64-image": "^2.0.1",
     "sqlite3": "^4",
     "typeorm": "^0.2.24"
