@@ -6,9 +6,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "debug": "DEBUG=1 nodemon",
+    "debug": "nodemon --exec \"node --inspect -r ts-node/register ./src/index.ts\"",
     "start": "nodemon",
-    "start:debug": "nodemon --watch \"src/*.ts\" \"src/**/*.ts\" \"node_modules/*jolocom*/**/*.js\" --ext ts,js --ignore src/**/*.spec.ts --exec \"node --inspect -r ts-node/register ./src/index.ts --inspect\"",
     "server": "ts-node ./src/index.ts",
     "test": "jest",
     "test:debug": "node --inspect --inspect-brk node_modules/.bin/jest --runInBand",

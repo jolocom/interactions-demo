@@ -60,7 +60,7 @@ const createChildProcess = (cwd, envVar, opt) => {
 const backendAppProcess = createChildProcess(
   process.cwd() + '/service_agent',
   'SERVICE_HOSTPORT',
-  args.debug ? 'start:debug' : 'start'
+  args.debug ? 'debug' : 'start'
 );
 const frontendAppProcess = createChildProcess(
   process.cwd() + '/frontend',
