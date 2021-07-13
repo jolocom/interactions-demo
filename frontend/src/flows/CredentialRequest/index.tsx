@@ -30,7 +30,7 @@ export const CredentialRequest: React.FC<ICredentialShareProps> = ({
     ) {
       setRequested(credTypes.slice(0, 1))
     }
-  })
+  }, [requestedCredentials.length, credTypes])
 
   const startCredRequest = async () => {
     const resp: { qr: string; err: string } = await serviceAPI.sendRPC(
