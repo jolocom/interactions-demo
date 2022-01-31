@@ -34,3 +34,7 @@
 .qr-code {
   max-width: 100%;
 }
+.redirect-form {
+	display: flex;
+	margin-bottom: 20px
+}
