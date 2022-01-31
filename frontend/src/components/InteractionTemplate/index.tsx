@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import QRCode from 'qrcode'
 
 import styles from './InteractionTemplate.module.css'
@@ -10,7 +10,11 @@ interface IInteractionTemplateProps {
   startText: string
   children: React.ReactNode
 }
-
+async function getDeepLinkQr(jwt: string) {
+  return await QRCode.toDataURL(
+    `https://jolocom.app.link/interact?token=${jwt}`,
+  )
+}
 export const InteractionTemplate: React.FC<IInteractionTemplateProps> = ({
   startHandler,
   startText,
@@ -28,16 +32,11 @@ export const InteractionTemplate: React.FC<IInteractionTemplateProps> = ({
     setErr(resp.err)
   }
 
-  const toggleDeepLink = async () => {
-    if (deeplinkQR) {
-      setDeeplinkQR(undefined)
-    } else {
-      const deeplinkQR = await QRCode.toDataURL(
-        `https://jolocom.app.link/interact?token=${jwt}`,
-      )
-      setDeeplinkQR(deeplinkQR)
+  useEffect(() => {
+    if (jwt) {
+      getDeepLinkQr(jwt).then(setDeeplinkQR)
     }
-  }
+  }, [jwt])
 
   return (
     <div className={styles['container']}>
@@ -46,26 +45,28 @@ export const InteractionTemplate: React.FC<IInteractionTemplateProps> = ({
         <InteractionBtn onClick={startBtnHandler} text={startText} />
         {err && <b>Error</b>}
         <InteractionQR jwt={jwt} />
-        {!err && qr && (
-          <>
-            <img src={qr} className={styles['qr-code']} alt="QR Code" />
-          </>
-        )}
-        {jwt && (
-          <>
-            <InteractionBtn
-              onClick={toggleDeepLink}
-              text={deeplinkQR ? 'Hide deep link qr' : 'Generate deep link'}
-            />
-            {deeplinkQR && (
+        {jwt ? (
+          <div className={styles['qrs-container']}>
+            <div className={styles['qr-container']}>
+              <p className={styles['qr-header']}>Contains token</p>
+              {!err && qr && (
+                <>
+                  <img src={qr} className={styles['qr-code']} alt="QR Code" />
+                </>
+              )}
+            </div>
+            <div className={styles['qr-container']}>
+              <p className={styles['qr-header']}>
+                Contains deeplink with token
+              </p>
               <img
                 src={deeplinkQR}
                 className={styles['qr-code']}
                 alt="QR Code DeedLink"
               />
-            )}
-          </>
-        )}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   )

@@ -15,6 +15,22 @@
   padding: 20px;
 }
 
+.qrs-container {
+	display: flex;
+	flex: 1;
+	margin-top: 20px;
+	justify-content: space-between;
+	width: 100%
+}
+.qr-container {
+	display: flex;
+	flex-direction: column;
+}
+.qr-header {
+	font-size: 20px;
+	font-weight: bold;
+	margin-bottom: 20px
+}
 .qr-code {
   max-width: 100%;
 }
