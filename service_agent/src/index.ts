@@ -213,9 +213,20 @@ export const init = async () => {
         { createInteractionCallbackURL, wrapJWT },
       ) => {
         const callbackURL = createInteractionCallbackURL(
-          async (jwt: string) => {
+          async (jwt: string, websocket: WebSocket) => {
             const interxn = await jolo.processJWT(jwt)
             console.log('auth request handled for', interxn.participants)
+
+            websocket.send(
+              JSON.stringify({
+                id: interxn.id,
+                status: 'update',
+                response: {
+                  id: interxn.id,
+                  participants: interxn.participants,
+                },
+              }),
+            )
           },
         )
         return wrapJWT(
@@ -288,7 +299,7 @@ export const init = async () => {
         const invalidTypes = req.invalid || []
 
         const callbackURL = createInteractionCallbackURL(
-          async (jwt: string) => {
+          async (jwt: string, websocket: WebSocket) => {
             const interxn = await jolo.processJWT(jwt)
             console.log('offerCred called back for', interxn.id)
 
@@ -322,6 +333,16 @@ export const init = async () => {
               'credentials issued',
               credentials.map((c) => last(c.type)),
             )
+            websocket.send(
+              JSON.stringify({
+                id: interxn.id,
+                status: 'update',
+                response: {
+                  id: interxn.id,
+                  credentials: credentials,
+                },
+              }),
+            )
             return interxn.createCredentialReceiveToken(credentials)
           },
         )
@@ -349,9 +370,20 @@ export const init = async () => {
           )
 
         const callbackURL = createInteractionCallbackURL(
-          async (jwt: string) => {
+          async (jwt: string, websocket: WebSocket) => {
             const interxn = await jolo.processJWT(jwt)
             console.log('credShareRequest called back for', interxn.id)
+
+            websocket.send(
+              JSON.stringify({
+                id: interxn.id,
+                status: 'update',
+                response: {
+                  id: interxn.id,
+                  state: interxn.flow.state,
+                },
+              }),
+            )
           },
         )
 

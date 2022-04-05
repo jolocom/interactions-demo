@@ -43,7 +43,7 @@ export const CredentialOfferCustom = ({
 
   useEffect(() => {
     handleSetInitialInputs(credType)
-  }, [])
+  }, [credType])
 
   const [credentialsToBeIssued, setCredentialsToBeIssued] = useState<
     Array<ICredential>
